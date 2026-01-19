@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+{% import 'alert.html.twig' as utils %}
+{#utils.alert('info', 'Erreur 404 : page non trouvée')#}
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome to BALATRO SIMULATOR{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+
+        {# Bootstrap 5 CSS CDN #}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <style>
+            /* Style pour les erreurs de formulaire */
+            ul.form-error-message,
+            .form-error-message,
+            .invalid-feedback,
+            .error {
+                color: #dc3545 !important;
+                background-color: #f8d7da;
+                border: 1px solid #f5c6cb;
+                padding: 8px 12px;
+                border-radius: 4px;
+                margin-top: 5px;
+                font-size: 14px;
+                font-weight: bold;
+            }
+            
+            .form-error-message ul,
+            .invalid-feedback ul {
+                margin: 0;
+                padding-left: 20px;
+                list-style: none;
+            }
+            
+            .form-error-message li,
+            .invalid-feedback li {
+                margin: 3px 0;
+                color: #dc3545 !important;
+            }
+            
+            /* Pour les erreurs directement dans le span */
+            span.error,
+            div.error {
+                display: block;
+                color: #dc3545 !important;
+                font-weight: bold;
+                margin-top: 5px;
+            }
+        </style>
+
+        {% block stylesheets %}
+        {% endblock %}
+
+        {% block javascripts %}
+        {% endblock %}
+        
+        {# Bootstrap 5 JS Bundle (optional, pour les composants interactifs) #}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </head>
+    <body>
+        {# Inclusion du menu de navigation #}
+        {% include 'partials/_menu.html.twig' %}
+        
+        {% block body %}
+        {% endblock %}
+
+        {% block menu %}
+        {% endblock %}
+
+        {% block footer %}
+        <h6>FOOTER OF BALATRO SIMULATOR</h6>
+        {% endblock %}
+        
+    </body>
+</html>

@@ -1,0 +1,17 @@
+{% extends "base.html.twig" %}
+{% block body %}
+<h1>{{quote | reverse}} {{"(" ~ quote|length ~ ")"}}</h1>
+
+{# Utilisation du filtre personnalisé alternateCase #}
+<h2>Citation avec alternance : {{quote | alternateCase}}</h2>
+
+<ul>
+    {% for q in allquotes %}
+        <li>{{q | capitalize}}</li>
+    {% endfor %}
+</ul>
+<p>Nombre de citations : {{allquotes | length}}</p>
+<p>La citation 2 est : {{allquotes[1]}}</p>
+<p> mais si j'avais fais une liste dirrectement dans le template, ça aurait été écrit allquotes.2</p>
+<h5>ceci est une page de teste pour afficher une citation aléatoire, non voué a rester. mais c'est cool donc je garde pour le moment.</h5>
+{% endblock %}

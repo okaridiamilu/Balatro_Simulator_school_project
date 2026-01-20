@@ -64,6 +64,14 @@ class JokerType extends AbstractType
                     'rows' => 3
                 ],
                 'required' => true
+            ])
+            ->add('image', TextType::class, [
+                'label' => 'URL de l\'image',
+                'attr' => [
+                    'placeholder' => 'Ex: /images/joker-default.jpg',
+                    'class' => 'form-control'
+                ],
+                'required' => false
             ]);
     }
 

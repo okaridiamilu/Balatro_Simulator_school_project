@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Joker;
 use App\Form\JokerFilterType;
 use App\Form\JokerType;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Validator\Constraints\Twig;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,10 +23,10 @@ class HomeController extends AbstractController
     }
     
     #[Route("/about", name:"about")]
-    public function about(Request $request): Response
+    public function about(Request $request, EntityManagerInterface $em): Response
     {
-        // Créer des jokers de démonstration (normalement depuis une base de données)
-        $allJokers = $this->createSampleJokers();
+        // Récupérer TOUS les jokers depuis la base de données
+        $allJokers = $em->getRepository(Joker::class)->findAll();
         
         // Créer le formulaire de filtre
         $filterForm = $this->createForm(JokerFilterType::class);
@@ -39,61 +40,6 @@ class HomeController extends AbstractController
             'jokers' => $filteredJokers,
             'totalJokers' => count($allJokers)
         ]);
-    }
-    
-    private function createSampleJokers(): array
-    {
-        $jokers = [];
-        
-        $joker1 = new Joker();
-        $joker1->setNom('Joker Vampire')
-            ->setEtat('foil')
-            ->setRarete('rare')
-            ->setDescription('Un joker effrayant avec des crocs acérés')
-            ->setEffet('Gagne +3 mult pour chaque carte cœur jouée');
-        $jokers[] = $joker1;
-        
-        $joker2 = new Joker();
-        $joker2->setNom('Baron')
-            ->setEtat('normale')
-            ->setRarete('uncommon')
-            ->setDescription('Un aristocrate calculateur')
-            ->setEffet('Chaque Roi joué donne x1.5 mult');
-        $jokers[] = $joker2;
-        
-        $joker3 = new Joker();
-        $joker3->setNom('Triboulet')
-            ->setEtat('polychrome')
-            ->setRarete('legendary')
-            ->setDescription('Le fou du roi le plus puissant')
-            ->setEffet('Les Rois et Dames jouées donnent x2 mult');
-        $jokers[] = $joker3;
-        
-        $joker4 = new Joker();
-        $joker4->setNom('Joker Greedy')
-            ->setEtat('chromatique')
-            ->setRarete('rare')
-            ->setDescription('Un joker avide de cartes de diamants')
-            ->setEffet('+4 mult par carte diamant dans la main jouée');
-        $jokers[] = $joker4;
-        
-        $joker5 = new Joker();
-        $joker5->setNom('Scary Face')
-            ->setEtat('normale')
-            ->setRarete('commun')
-            ->setDescription('Un visage terrifiant qui fait peur aux figures')
-            ->setEffet('Les cartes figure donnent +30 jetons');
-        $jokers[] = $joker5;
-        
-        $joker6 = new Joker();
-        $joker6->setNom('Abstract Joker')
-            ->setEtat('foil')
-            ->setRarete('uncommon')
-            ->setDescription('Un joker abstrait et minimaliste')
-            ->setEffet('+3 mult par carte Joker possédée');
-        $jokers[] = $joker6;
-        
-        return $jokers;
     }
     
     private function filterJokers(array $jokers, ?array $filters): array

@@ -3,8 +3,10 @@
 namespace App\Form;
 
 use App\Entity\Joker;
+use App\Enum\EtatJoker;
+use App\Enum\RareteJoker;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -23,26 +25,18 @@ class JokerType extends AbstractType
                 ],
                 'required' => true
             ])
-            ->add('etat', ChoiceType::class, [
+            ->add('etat', EnumType::class, [
+                'class' => EtatJoker::class,
                 'label' => 'État',
-                'choices' => [
-                    'Normale' => 'normale',
-                    'Foil' => 'foil',
-                    'Polychrome' => 'polychrome',
-                    'Chromatique' => 'chromatique'
-                ],
+                'choice_label' => fn(EtatJoker $etat) => ucfirst($etat->value),
                 'attr' => ['class' => 'form-control'],
                 'placeholder' => 'Sélectionner un état',
                 'required' => true
             ])
-            ->add('rarete', ChoiceType::class, [
+            ->add('rarete', EnumType::class, [
+                'class' => RareteJoker::class,
                 'label' => 'Rareté',
-                'choices' => [
-                    'Commun' => 'commun',
-                    'Uncommon' => 'uncommon',
-                    'Rare' => 'rare',
-                    'Legendary' => 'legendary'
-                ],
+                'choice_label' => fn(RareteJoker $rarete) => ucfirst($rarete->value),
                 'attr' => ['class' => 'form-control'],
                 'placeholder' => 'Sélectionner une rareté',
                 'required' => true
@@ -53,15 +47,6 @@ class JokerType extends AbstractType
                     'placeholder' => 'Description du joker...',
                     'class' => 'form-control',
                     'rows' => 4
-                ],
-                'required' => true
-            ])
-            ->add('effet', TextareaType::class, [
-                'label' => 'Effet',
-                'attr' => [
-                    'placeholder' => 'Effet du joker en jeu...',
-                    'class' => 'form-control',
-                    'rows' => 3
                 ],
                 'required' => true
             ])

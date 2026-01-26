@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Enum\EtatJoker;
+use App\Enum\RareteJoker;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -23,21 +25,13 @@ class Joker
     #[ORM\Column(length: 50, nullable: false)]
     private ?string $nom = null;
 
-    #[Assert\NotBlank(message: "L'état doit être défini")]
-    #[Assert\Choice(
-        choices: ['normale', 'foil', 'polychrome', 'chromatique'],
-        message: "L'état doit être : normale, foil, polychrome ou chromatique"
-    )]
-    #[ORM\Column(length: 20, nullable: false)]
-    private ?string $etat = 'normale';
+    #[Assert\NotNull(message: "L'état doit être défini")]
+    #[ORM\Column(type: 'string', enumType: EtatJoker::class)]
+    private ?EtatJoker $etat = null;
 
-    #[Assert\NotBlank(message: "La rareté doit être définie")]
-    #[Assert\Choice(
-        choices: ['commun', 'uncommon', 'rare', 'legendary'],
-        message: "La rareté doit être : commun, uncommon, rare ou legendary"
-    )]
-    #[ORM\Column(length: 20, nullable: false)]
-    private ?string $rarete = 'commun';
+    #[Assert\NotNull(message: "La rareté doit être définie")]
+    #[ORM\Column(type: 'string', enumType: RareteJoker::class)]
+    private ?RareteJoker $rarete = null;
 
     #[Assert\NotBlank(message: "La description ne peut pas être vide")]
     #[Assert\Length(
@@ -48,15 +42,6 @@ class Joker
     )]
     #[ORM\Column(length: 500, nullable: false)]
     private ?string $description = null;
-
-    #[Assert\NotBlank(message: "L'effet doit être défini")]
-    #[Assert\Length(
-        min: 5,
-        max: 300,
-        minMessage: "L'effet doit contenir au moins {{ limit }} caractères"
-    )]
-    #[ORM\Column(length: 300, nullable: false)]
-    private ?string $effet = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
@@ -79,23 +64,23 @@ class Joker
         return $this;
     }
 
-    public function getEtat(): ?string
+    public function getEtat(): ?EtatJoker
     {
         return $this->etat;
     }
 
-    public function setEtat(?string $etat): self
+    public function setEtat(?EtatJoker $etat): self
     {
         $this->etat = $etat;
         return $this;
     }
 
-    public function getRarete(): ?string
+    public function getRarete(): ?RareteJoker
     {
         return $this->rarete;
     }
 
-    public function setRarete(?string $rarete): self
+    public function setRarete(?RareteJoker $rarete): self
     {
         $this->rarete = $rarete;
         return $this;
@@ -109,17 +94,6 @@ class Joker
     public function setDescription(?string $description): self
     {
         $this->description = $description;
-        return $this;
-    }
-
-    public function getEffet(): ?string
-    {
-        return $this->effet;
-    }
-
-    public function setEffet(?string $effet): self
-    {
-        $this->effet = $effet;
         return $this;
     }
 

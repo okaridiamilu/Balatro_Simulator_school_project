@@ -52,25 +52,27 @@
                 {# Image du joker #}
                 <div style="text-align: center; margin-bottom: 15px;">
                     <img src="{{ joker.image ?? '/images/joker-default.jpg' }}" 
-                         alt="{{ joker.nom }}" 
-                         style="max-width: 100%; height: auto; border-radius: 8px; max-height: 200px;">
+                        alt="{{ joker.nom }}" 
+                        style="max-width: 100%; height: auto; border-radius: 8px; max-height: 200px;">
                 </div>
                 
                 <h3 style="margin-top: 0; color: #333;">
                     {{ joker.nom }}
-                    {% if joker.etat == 'foil' %}
+                    {% if joker.etat.value == 'foil' %}
                         ✨
-                    {% elseif joker.etat == 'polychrome' %}
+                    {% elseif joker.etat.value == 'polychrome' %}
                         🌈
-                    {% elseif joker.etat == 'chromatique' %}
-                        🎨
+                    {% elseif joker.etat.value == 'holographique' %}
+                        💎
+                    {% elseif joker.etat.value == 'negatif' %}
+                        ⚫
                     {% endif %}
                 </h3>
                 
                 <p style="margin: 10px 0;">
                     <strong>État :</strong> 
                     <span style="background-color: #e9ecef; padding: 3px 8px; border-radius: 3px;">
-                        {{ joker.etat|capitalize }}
+                        {{ joker.etat.value|capitalize }}
                     </span>
                 </p>
                 
@@ -80,17 +82,17 @@
                         padding: 3px 8px; 
                         border-radius: 3px; 
                         color: white;
-                        {% if joker.rarete == 'commun' %}
+                        {% if joker.rarete.value == 'commun' %}
                             background-color: #6c757d;
-                        {% elseif joker.rarete == 'uncommon' %}
+                        {% elseif joker.rarete.value == 'uncommun' %}
                             background-color: #28a745;
-                        {% elseif joker.rarete == 'rare' %}
+                        {% elseif joker.rarete.value == 'rare' %}
                             background-color: #007bff;
-                        {% elseif joker.rarete == 'legendary' %}
+                        {% elseif joker.rarete.value == 'legendary' %}
                             background-color: #ffc107; color: #000;
                         {% endif %}
                     ">
-                        {{ joker.rarete|upper }}
+                        {{ joker.rarete.value|upper }}
                     </span>
                 </p>
                 
@@ -98,18 +100,14 @@
                     {{ joker.description }}
                 </p>
                 
-                <p style="background-color: #fff3cd; padding: 10px; border-left: 4px solid #ffc107; margin: 10px 0;">
-                    <strong>💡 Effet :</strong> {{ joker.effet }}
-                </p>
-                
                 {# Boutons d'action #}
                 <div style="display: flex; gap: 10px; margin-top: 15px; border-top: 1px solid #ddd; padding-top: 15px;">
                     <a href="{{ path('joker_edit', {'id': joker.id}) }}" 
-                       style="flex: 1; text-align: center; padding: 8px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">
+                    style="flex: 1; text-align: center; padding: 8px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">
                         ✏️ Modifier
                     </a>
                     <form method="post" action="{{ path('joker_delete', {'id': joker.id}) }}" style="flex: 1; margin: 0;" 
-                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer {{ joker.nom }} ?');">
+                        onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer {{ joker.nom }} ?');">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ joker.id) }}">
                         <button type="submit" style="width: 100%; padding: 8px 15px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">
                             🗑️ Supprimer

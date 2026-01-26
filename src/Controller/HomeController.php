@@ -58,16 +58,16 @@ class HomeController extends AbstractController
                 }
             }
             
-            // Filtre par état
+            // Filtre par état (comparer avec la valeur de l'ENUM)
             if (!empty($filters['etat'])) {
-                if ($joker->getEtat() !== $filters['etat']) {
+                if ($joker->getEtat()->value !== $filters['etat']) {
                     return false;
                 }
             }
             
-            // Filtre par rareté
+            // Filtre par rareté (comparer avec la valeur de l'ENUM)
             if (!empty($filters['rarete'])) {
-                if ($joker->getRarete() !== $filters['rarete']) {
+                if ($joker->getRarete()->value !== $filters['rarete']) {
                     return false;
                 }
             }

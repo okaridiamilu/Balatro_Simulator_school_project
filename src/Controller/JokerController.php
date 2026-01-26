@@ -24,7 +24,7 @@ class JokerController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Log des informations du joker créé
-            $logger->info('Joker créé: ' . $joker->getNom() . ' - ' . $joker->getEtat() . ' - ' . $joker->getRarete());
+            $logger->info('Joker créé: ' . $joker->getNom() . ' - ' . $joker->getEtat()->value . ' - ' . $joker->getRarete()->value);
             
             // Sauvegarder en base de données
             $em->persist($joker);  // Prépare l'objet pour la sauvegarde

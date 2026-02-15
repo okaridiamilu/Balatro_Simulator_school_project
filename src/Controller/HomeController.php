@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\Joker;
+use App\Entity\JokerTemplate;
 use App\Form\JokerFilterType;
-use App\Form\JokerType;
+use App\Form\JokerTemplateType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Validator\Constraints\Twig;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,8 +25,8 @@ class HomeController extends AbstractController
     #[Route("/about", name:"about")]
     public function about(Request $request, EntityManagerInterface $em): Response
     {
-        // Récupérer TOUS les jokers depuis la base de données
-        $allJokers = $em->getRepository(Joker::class)->findAll();
+        // Récupérer TOUS les joker templates depuis la base de données
+        $allJokers = $em->getRepository(JokerTemplate::class)->findAll();
         
         // Créer le formulaire de filtre
         $filterForm = $this->createForm(JokerFilterType::class);
@@ -48,19 +48,12 @@ class HomeController extends AbstractController
             return $jokers;
         }
         
-        return array_filter($jokers, function(Joker $joker) use ($filters) {
+        return array_filter($jokers, function(JokerTemplate $joker) use ($filters) {
             // Filtre par nom
             if (!empty($filters['nom'])) {
                 $searchTerm = strtolower($filters['nom']);
                 $jokerName = strtolower($joker->getNom());
                 if (strpos($jokerName, $searchTerm) === false) {
-                    return false;
-                }
-            }
-            
-            // Filtre par état (comparer avec la valeur de l'ENUM)
-            if (!empty($filters['etat'])) {
-                if ($joker->getEtat()->value !== $filters['etat']) {
                     return false;
                 }
             }
@@ -77,13 +70,13 @@ class HomeController extends AbstractController
     }
 
     #[Route("/joker/new", name:"joker_new")]
-    public function newJoker(Request $request): Response
+    public function newJoker(Request $request, EntityManagerInterface $em): Response
     {
-        // 1. Instancier une nouvelle entité
-        $joker = new Joker();
+        // 1. Instancier une nouvelle entité JokerTemplate
+        $jokerTemplate = new JokerTemplate();
         
         // 2. Créer le formulaire à partir du Type
-        $form = $this->createForm(JokerType::class, $joker);
+        $form = $this->createForm(JokerTemplateType::class, $jokerTemplate);
         
         // 3. Écouter la requête
         $form->handleRequest($request);
@@ -93,12 +86,12 @@ class HomeController extends AbstractController
             // 5. Récupérer les données validées
             $validatedJoker = $form->getData();
             
-            // 6. Les données sont validées !
-            // Note: Sans base de données, le joker n'est pas sauvegardé
-            // Il existe seulement en mémoire pendant cette requête
+            // 6. Sauvegarder en base de données
+            $em->persist($validatedJoker);
+            $em->flush();
             
             // Message de succès
-            $this->addFlash('success', 'Le joker "' . $validatedJoker->getNom() . '" a été validé avec succès ! (Note: non sauvegardé car pas de BDD)');
+            $this->addFlash('success', 'Le joker template "' . $validatedJoker->getNom() . '" a été créé avec succès !');
             
             // Rediriger vers la liste
             return $this->redirectToRoute('about');

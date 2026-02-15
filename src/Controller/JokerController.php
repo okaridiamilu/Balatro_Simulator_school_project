@@ -50,8 +50,8 @@ class JokerController extends AbstractController
         $joker->setNom('Joker Exemple')
             ->setEtat('normale')
             ->setRarete('commun')
-            ->setDescription('Un joker de test')
-            ->setEffet('Effet de test');
+            ->setDescription('Un joker de test');
+            //->setEffet('Effet de test');
 
         return $this->render('joker/show.html.twig', [
             'joker' => $joker,

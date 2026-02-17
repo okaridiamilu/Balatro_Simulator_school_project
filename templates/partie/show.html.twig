@@ -10,19 +10,19 @@
 </div>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h1 style="margin: 0;">🎲 {{ partie.identifiant }}</h1>
+    <h1 style="margin: 0;">{{ partie.identifiant }}</h1>
     <div style="display: flex; gap: 10px;">
         <a href="{{ path('partie_cartes_index', {'partieId': partie.id}) }}" 
            style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-            🃏 Deck ({{ partie.cartes|length }})
+            Deck ({{ partie.cartes|length }})
         </a>
         <a href="{{ path('partie_consommables_index', {'partieId': partie.id}) }}" 
            style="background-color: #6f42c1; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-            🔮 Consommables ({{ partie.consommables|length }})
+            Consommables ({{ partie.consommables|length }})
         </a>
         <a href="{{ path('hand_levels_index', {'partieId': partie.id}) }}" 
            style="background-color: #17a2b8; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-            📊 Hand Levels
+            Hand Levels
         </a>
     </div>
 </div>
@@ -30,14 +30,13 @@
 {# Messages flash #}
 {% for message in app.flashes('success') %}
     <div style="background-color: #28a745; color: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
-        ✅ {{ message }}
+        {{ message }}
     </div>
 {% endfor %}
 
 {# Informations de la partie #}
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 30px 0;">
     <div style="background-color: #ffc107; color: #000; padding: 20px; border-radius: 10px; text-align: center;">
-        <div style="font-size: 2em;">💰</div>
         <div style="font-size: 1.5em; font-weight: bold;">{{ partie.money }}$</div>
         <div style="font-size: 0.9em;">Argent</div>
         <div style="margin-top: 10px;">
@@ -53,7 +52,6 @@
     </div>
     
     <div style="background-color: #007bff; color: white; padding: 20px; border-radius: 10px; text-align: center;">
-        <div style="font-size: 2em;">🃏</div>
         <div style="font-size: 1.5em; font-weight: bold;">{{ partie.hand }}</div>
         <div style="font-size: 0.9em;">Cartes en main</div>
         <div style="margin-top: 10px;">
@@ -69,7 +67,6 @@
     </div>
     
     <div style="background-color: #6c757d; color: white; padding: 20px; border-radius: 10px; text-align: center;">
-        <div style="font-size: 2em;">🗑️</div>
         <div style="font-size: 1.5em; font-weight: bold;">{{ partie.discard }}</div>
         <div style="font-size: 0.9em;">Défausses</div>
         <div style="margin-top: 10px;">
@@ -85,7 +82,6 @@
     </div>
     
     <div style="background-color: #17a2b8; color: white; padding: 20px; border-radius: 10px; text-align: center;">
-        <div style="font-size: 2em;">🤡</div>
         <div style="font-size: 1.5em; font-weight: bold;">
             {{ partie.jokers|length }}/{{ partie.totalJokerSlots }}
         </div>
@@ -103,13 +99,12 @@
     </div>
     
     <div style="background-color: {% if partie.observatoireActif %}#9b59b6{% else %}#34495e{% endif %}; color: white; padding: 20px; border-radius: 10px; text-align: center;">
-        <div style="font-size: 2em;">🔭</div>
         <div style="font-size: 1.5em; font-weight: bold;">Observatoire</div>
         <div style="font-size: 0.9em;">
             {% if partie.observatoireActif %}
-                ✅ Activé
+                Activé
             {% else %}
-                ⚪ Désactivé
+                Désactivé
             {% endif %}
         </div>
         <form method="post" action="{{ path('partie_toggle_observatoire', {'id': partie.id}) }}" style="margin-top: 10px;">
@@ -128,7 +123,7 @@
 <hr style="margin: 40px 0;">
 
 {# Mes Jokers #}
-<h2>🤡 Mes Jokers ({{ partie.jokers|length }}/{{ partie.totalJokerSlots }})</h2>
+<h2>Mes Jokers ({{ partie.jokers|length }}/{{ partie.totalJokerSlots }})</h2>
 
 {% if partie.jokers|length > 0 %}
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
@@ -139,13 +134,13 @@
                         {{ jokerInstance.jokerTemplate.nom }}
                         {% if jokerInstance.etat %}
                             {% if jokerInstance.etat.value == 'foil' %}
-                                ✨
+                                (Foil)
                             {% elseif jokerInstance.etat.value == 'polychrome' %}
-                                🌈
+                                (Polychrome)
                             {% elseif jokerInstance.etat.value == 'holographique' %}
-                                💎
+                                (Holographique)
                             {% elseif jokerInstance.etat.value == 'negatif' %}
-                                ⚫
+                                (Négatif)
                             {% endif %}
                         {% endif %}
                     </h3>
@@ -216,20 +211,20 @@
                             <strong>Effet total :</strong> 
                             {% set total = jokerInstance.effetTotal %}
                             {% if jokerInstance.jokerTemplate.typeStack.value == 'chips' %}
-                                +{{ total }} Chips 🪙
+                                +{{ total }} Chips
                             {% elseif jokerInstance.jokerTemplate.typeStack.value == 'mult_flat' %}
-                                +{{ total }} Mult ✖️
+                                +{{ total }} Mult
                             {% elseif jokerInstance.jokerTemplate.typeStack.value == 'mult_multiplicateur' %}
-                                x{{ total }} Mult 📈
+                                x{{ total }} Mult
                             {% elseif jokerInstance.jokerTemplate.typeStack.value == 'xmult' %}
-                                x{{ total }} Mult 💥
+                                x{{ total }} Mult
                             {% endif %}
                         </p>
                     </div>
                 {% else %}
                     <div style="background-color: #e7f3ff; padding: 10px; border-radius: 5px; margin: 10px 0; border-left: 3px solid #007bff;">
                         <p style="margin: 0; font-size: 0.85em; color: #0056b3; font-style: italic;">
-                            ⚡ Effet conditionnel - S'applique pendant le jeu
+                            Effet conditionnel - S'applique pendant le jeu
                         </p>
                     </div>
                 {% endif %}
@@ -237,7 +232,7 @@
                 <a href="{{ path('partie_joker_delete', {'partieId': partie.id, 'jokerId': jokerInstance.id}) }}" 
                    onclick="return confirm('Retirer ce joker de la partie ?');"
                    style="display: block; text-align: center; padding: 8px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 5px; margin-top: 10px;">
-                    🗑️ Retirer
+                    Retirer
                 </a>
             </div>
         {% endfor %}
@@ -253,23 +248,23 @@
 <hr style="margin: 40px 0;">
 
 {# Formulaire pour ajouter un joker #}
-<h2>➕ Ajouter un Joker</h2>
+<h2>Ajouter un Joker</h2>
 
 {% if partie.availableJokerSlots <= 0 %}
     <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 15px 0; border-radius: 5px;">
-        <strong>⚠️ Limite de slots atteinte !</strong><br>
+        <strong>Limite de slots atteinte !</strong><br>
         <p style="margin: 10px 0;">
             Vous avez {{ partie.jokers|length }} jokers sur {{ partie.totalJokerSlots }} slots disponibles.<br>
             Pour ajouter plus de jokers :
         </p>
         <ul style="margin: 5px 0 0 20px;">
             <li>Utilisez les boutons <strong>+1</strong> dans la carte "Slots Jokers" ci-dessus pour augmenter la limite</li>
-            <li><strong>OU</strong> ajoutez un joker avec l'état <strong>Négatif ⚫</strong> (augmente automatiquement la limite de +1)</li>
+            <li><strong>OU</strong> ajoutez un joker avec l'état <strong>Négatif</strong> (augmente automatiquement la limite de +1)</li>
         </ul>
     </div>
 {% else %}
     <div style="background-color: #d4edda; border-left: 4px solid #28a745; padding: 10px 15px; margin: 15px 0; border-radius: 5px;">
-        <strong>✅ Slots disponibles :</strong> {{ partie.availableJokerSlots }} slot(s) libre(s)
+        <strong>Slots disponibles :</strong> {{ partie.availableJokerSlots }} slot(s) libre(s)
     </div>
 {% endif %}
 
@@ -277,7 +272,7 @@
         {# Barre de recherche de joker #}
         <div style="margin-bottom: 20px;">
             <label style="font-weight: bold; margin-bottom: 5px; display: block;">
-                🔍 Rechercher un Joker
+                Rechercher un Joker
             </label>
             <input type="text" 
                    id="joker-search" 
@@ -305,10 +300,10 @@
                         <label style="font-weight: bold; margin-bottom: 5px; display: block;">État (optionnel)</label>
                         <select name="joker_instance[etat]" class="form-control">
                             <option value="">Normal (aucun effet)</option>
-                            <option value="foil">Foil ✨</option>
-                            <option value="holographique">Holographique 💎</option>
-                            <option value="polychrome">Polychrome 🌈</option>
-                            <option value="negatif">Négatif ⚫</option>
+                            <option value="foil">Foil</option>
+                            <option value="holographique">Holographique</option>
+                            <option value="polychrome">Polychrome</option>
+                            <option value="negatif">Négatif</option>
                         </select>
                         <small style="color: #666; font-size: 0.9em;">Les états spéciaux donnent des bonus supplémentaires</small>
                     </div>
@@ -337,10 +332,10 @@
                 </div>
                 
                 <button type="submit" style="background-color: #28a745; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em;">
-                    ✅ Ajouter le Joker
+                    Ajouter le Joker
                 </button>
                 <button type="button" onclick="cancelJokerSelection()" style="background-color: #6c757d; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; margin-left: 10px;">
-                    ❌ Annuler
+                    Annuler
                 </button>
             </form>
         </div>
@@ -376,10 +371,10 @@
                         'legendary': '#ffc107'
                     };
                     const typeIcons = {
-                        'chips': '🪙',
-                        'mult_flat': '✖️',
-                        'mult_multiplicateur': '📈',
-                        'xmult': '💥'
+                        'chips': '',
+                        'mult_flat': '+Mult',
+                        'mult_multiplicateur': 'xMult',
+                        'xmult': 'xMult'
                     };
                     
                     html += `
@@ -408,7 +403,7 @@
                                 </p>
                             ` : `
                                 <p style="margin: 5px 0 0 0; font-size: 0.85em; color: #007bff;">
-                                    ⚡ Effet conditionnel
+                                    Effet conditionnel
                                 </p>
                             `}
                         </div>

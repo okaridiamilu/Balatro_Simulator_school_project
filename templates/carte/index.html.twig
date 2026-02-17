@@ -9,24 +9,24 @@
     </a>
 </div>
 
-<h1>🃏 Deck de Cartes - {{ partie.identifiant }}</h1>
+<h1>Deck de Cartes - {{ partie.identifiant }}</h1>
 
 {# Messages flash #}
 {% for message in app.flashes('success') %}
     <div style="background-color: #28a745; color: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
-        ✅ {{ message }}
+        {{ message }}
     </div>
 {% endfor %}
 
 {% for message in app.flashes('error') %}
     <div style="background-color: #dc3545; color: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
-        ❌ {{ message }}
+        {{ message }}
     </div>
 {% endfor %}
 
 {# Statistiques du deck #}
 <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
-    <h3 style="margin-top: 0;">📊 Statistiques</h3>
+    <h3 style="margin-top: 0;">Statistiques</h3>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
         <div>
             <strong>Nombre total de cartes :</strong> {{ partie.cartes|length }}
@@ -52,7 +52,7 @@
         <form method="post" action="{{ path('partie_cartes_create_standard_deck', {'partieId': partie.id}) }}" style="display: inline;">
             <input type="hidden" name="_token" value="{{ csrf_token('create_deck') }}">
             <button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                🎴 Créer un deck standard (52 cartes)
+                Créer un deck standard (52 cartes)
             </button>
         </form>
     {% else %}
@@ -61,20 +61,20 @@
               style="display: inline;">
             <input type="hidden" name="_token" value="{{ csrf_token('clear_deck') }}">
             <button type="submit" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                🗑️ Vider le deck
+                Vider le deck
             </button>
         </form>
     {% endif %}
     
     <button onclick="document.getElementById('add-card-form').style.display='block'" 
             style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-        ➕ Ajouter une carte
+        Ajouter une carte
     </button>
 </div>
 
 {# Formulaire d'ajout de carte #}
 <div id="add-card-form" style="display: none; background-color: white; padding: 25px; border-radius: 10px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); margin: 20px 0;">
-    <h3>➕ Ajouter une carte</h3>
+    <h3>Ajouter une carte</h3>
     <form method="post" action="{{ path('partie_cartes_add', {'partieId': partie.id}) }}">
         <input type="hidden" name="_token" value="{{ csrf_token('carte_add') }}">
         
@@ -101,10 +101,10 @@
             <div>
                 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Couleur</label>
                 <select name="color" class="form-control" required>
-                    <option value="hearts">♥️ Cœur</option>
-                    <option value="diamonds">♦️ Carreau</option>
-                    <option value="clubs">♣️ Trèfle</option>
-                    <option value="spade">♠️ Pique</option>
+                    <option value="hearts">Cœur</option>
+                    <option value="diamonds">Carreau</option>
+                    <option value="clubs">Trèfle</option>
+                    <option value="spade">Pique</option>
                 </select>
             </div>
             
@@ -112,9 +112,9 @@
                 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Édition</label>
                 <select name="status" class="form-control">
                     <option value="base">Base</option>
-                    <option value="foil">Foil ✨</option>
-                    <option value="holographic">Holographique 💎</option>
-                    <option value="polychrome">Polychrome 🌈</option>
+                    <option value="foil">Foil</option>
+                    <option value="holographic">Holographique</option>
+                    <option value="polychrome">Polychrome</option>
                 </select>
             </div>
             
@@ -122,10 +122,10 @@
                 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Sceau</label>
                 <select name="seal" class="form-control">
                     <option value="base">Aucun</option>
-                    <option value="gold">🟡 Or</option>
-                    <option value="red">🔴 Rouge</option>
-                    <option value="blue">🔵 Bleu</option>
-                    <option value="purple">🟣 Violet</option>
+                    <option value="gold">Or</option>
+                    <option value="red">Rouge</option>
+                    <option value="blue">Bleu</option>
+                    <option value="purple">Violet</option>
                 </select>
             </div>
             
@@ -133,25 +133,25 @@
                 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Amélioration</label>
                 <select name="matter" class="form-control">
                     <option value="base">Aucune</option>
-                    <option value="bonus">💰 Bonus (+30 chips)</option>
-                    <option value="mult">✖️ Mult (+4 mult)</option>
-                    <option value="wild">🃏 Wild (change de couleur)</option>
-                    <option value="glass">🔷 Verre (x2 mult, fragile)</option>
-                    <option value="steel">⚙️ Acier (x1.5 mult)</option>
-                    <option value="stone">🗿 Pierre (+50 chips, pas de rang)</option>
-                    <option value="gold">💛 Or (+3$ quand jouée)</option>
-                    <option value="lucky">🍀 Lucky (chance de +20 mult/+20$)</option>
+                    <option value="bonus">Bonus (+30 chips)</option>
+                    <option value="mult">Mult (+4 mult)</option>
+                    <option value="wild">Wild (change de couleur)</option>
+                    <option value="glass">Verre (x2 mult, fragile)</option>
+                    <option value="steel">Acier (x1.5 mult)</option>
+                    <option value="stone">Pierre (+50 chips, pas de rang)</option>
+                    <option value="gold">Or (+3$ quand jouée)</option>
+                    <option value="lucky">Lucky (chance de +20 mult/+20$)</option>
                 </select>
             </div>
         </div>
         
         <div style="display: flex; gap: 10px;">
             <button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                ✅ Ajouter
+                Ajouter
             </button>
             <button type="button" onclick="document.getElementById('add-card-form').style.display='none'" 
                     style="background-color: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                ❌ Annuler
+                Annuler
             </button>
         </div>
     </form>
@@ -161,7 +161,7 @@
 
 {# Affichage des cartes #}
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-    <h2 style="margin: 0;">🃏 Cartes du deck ({{ partie.cartes|length }})</h2>
+    <h2 style="margin: 0;">Cartes du deck ({{ partie.cartes|length }})</h2>
     {% if partie.cartes|length > 0 %}
         <label style="cursor: pointer; user-select: none;">
             <input type="checkbox" id="select-all" style="margin-right: 5px; transform: scale(1.2);">
@@ -206,10 +206,10 @@
                 <div style="font-size: 2em; font-weight: bold; margin: 10px 0;
                     color: {% if carte.color.value == 'hearts' or carte.color.value == 'diamonds' %}#dc3545{% else %}#000{% endif %}">
                     {{ carte.number.value|upper }}
-                    {% if carte.color.value == 'hearts' %}♥️
-                    {% elseif carte.color.value == 'diamonds' %}♦️
-                    {% elseif carte.color.value == 'clubs' %}♣️
-                    {% elseif carte.color.value == 'spade' %}♠️
+                    {% if carte.color.value == 'hearts' %}Cœur
+                    {% elseif carte.color.value == 'diamonds' %}Carreau
+                    {% elseif carte.color.value == 'clubs' %}Trèfle
+                    {% elseif carte.color.value == 'spade' %}Pique
                     {% endif %}
                 </div>
                 
@@ -217,33 +217,33 @@
                 <div style="font-size: 0.8em; margin: 5px 0;">
                     {% if carte.status.value != 'base' %}
                         <span style="display: block; margin: 2px 0;">
-                            {% if carte.status.value == 'foil' %}✨ Foil
-                            {% elseif carte.status.value == 'holographic' %}💎 Holo
-                            {% elseif carte.status.value == 'polychrome' %}🌈 Poly
+                            {% if carte.status.value == 'foil' %}Foil
+                            {% elseif carte.status.value == 'holographic' %}Holo
+                            {% elseif carte.status.value == 'polychrome' %}Poly
                             {% endif %}
                         </span>
                     {% endif %}
                     
                     {% if carte.seal.value != 'base' %}
                         <span style="display: block; margin: 2px 0;">
-                            {% if carte.seal.value == 'gold' %}🟡
-                            {% elseif carte.seal.value == 'red' %}🔴
-                            {% elseif carte.seal.value == 'blue' %}🔵
-                            {% elseif carte.seal.value == 'purple' %}🟣
+                            {% if carte.seal.value == 'gold' %}Or
+                            {% elseif carte.seal.value == 'red' %}Rouge
+                            {% elseif carte.seal.value == 'blue' %}Bleu
+                            {% elseif carte.seal.value == 'purple' %}Violet
                             {% endif %}
                         </span>
                     {% endif %}
                     
                     {% if carte.matter.value != 'base' %}
                         <span style="display: block; margin: 2px 0; background-color: #ffc107; padding: 2px 5px; border-radius: 3px;">
-                            {% if carte.matter.value == 'bonus' %}💰
-                            {% elseif carte.matter.value == 'mult' %}✖️
-                            {% elseif carte.matter.value == 'wild' %}🃏
-                            {% elseif carte.matter.value == 'glass' %}🔷
-                            {% elseif carte.matter.value == 'steel' %}⚙️
-                            {% elseif carte.matter.value == 'stone' %}🗿
-                            {% elseif carte.matter.value == 'gold' %}💛
-                            {% elseif carte.matter.value == 'lucky' %}🍀
+                            {% if carte.matter.value == 'bonus' %}Bonus
+                            {% elseif carte.matter.value == 'mult' %}Mult
+                            {% elseif carte.matter.value == 'wild' %}Wild
+                            {% elseif carte.matter.value == 'glass' %}Verre
+                            {% elseif carte.matter.value == 'steel' %}Acier
+                            {% elseif carte.matter.value == 'stone' %}Pierre
+                            {% elseif carte.matter.value == 'gold' %}Or
+                            {% elseif carte.matter.value == 'lucky' %}Lucky
                             {% endif %}
                         </span>
                     {% endif %}
@@ -255,7 +255,7 @@
                     <button type="submit" 
                             onclick="return confirm('Retirer cette carte du deck ?');"
                             style="background-color: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; font-size: 0.8em; width: 100%;">
-                        🗑️ Retirer
+                        Retirer
                     </button>
                 </form>
             </div>
@@ -264,7 +264,7 @@
 {% else %}
     <div style="background-color: #f8f9fa; padding: 40px; text-align: center; border-radius: 10px; margin: 20px 0;">
         <p style="font-size: 1.2em; color: #6c757d;">
-            🃏 Aucune carte dans le deck
+            Aucune carte dans le deck
         </p>
         <p style="color: #999;">
             Créez un deck standard ou ajoutez des cartes manuellement
@@ -295,16 +295,16 @@
                 {# Supprimer #}
                 <button onclick="bulkAction('delete')" 
                         style="background-color: #dc3545; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                    🗑️ Supprimer
+                    Supprimer
                 </button>
                 
                 {# Modifier l'édition #}
                 <select id="bulk-status" style="padding: 10px; border-radius: 5px; border: none;">
                     <option value="">-- Changer édition --</option>
                     <option value="base">Base</option>
-                    <option value="foil">Foil ✨</option>
-                    <option value="holographic">Holographique 💎</option>
-                    <option value="polychrome">Polychrome 🌈</option>
+                    <option value="foil">Foil</option>
+                    <option value="holographic">Holographique</option>
+                    <option value="polychrome">Polychrome</option>
                 </select>
                 <button onclick="bulkAction('change_status')" 
                         style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
@@ -315,10 +315,10 @@
                 <select id="bulk-seal" style="padding: 10px; border-radius: 5px; border: none;">
                     <option value="">-- Changer sceau --</option>
                     <option value="base">Aucun</option>
-                    <option value="gold">🟡 Or</option>
-                    <option value="red">🔴 Rouge</option>
-                    <option value="blue">🔵 Bleu</option>
-                    <option value="purple">🟣 Violet</option>
+                    <option value="gold">Or</option>
+                    <option value="red">Rouge</option>
+                    <option value="blue">Bleu</option>
+                    <option value="purple">Violet</option>
                 </select>
                 <button onclick="bulkAction('change_seal')" 
                         style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
@@ -329,14 +329,14 @@
                 <select id="bulk-matter" style="padding: 10px; border-radius: 5px; border: none;">
                     <option value="">-- Changer amélioration --</option>
                     <option value="base">Aucune</option>
-                    <option value="bonus">💰 Bonus</option>
-                    <option value="mult">✖️ Mult</option>
-                    <option value="wild">🃏 Wild</option>
-                    <option value="glass">🔷 Verre</option>
-                    <option value="steel">⚙️ Acier</option>
-                    <option value="stone">🗿 Pierre</option>
-                    <option value="gold">💛 Or</option>
-                    <option value="lucky">🍀 Lucky</option>
+                    <option value="bonus">Bonus</option>
+                    <option value="mult">Mult</option>
+                    <option value="wild">Wild</option>
+                    <option value="glass">Verre</option>
+                    <option value="steel">Acier</option>
+                    <option value="stone">Pierre</option>
+                    <option value="gold">Or</option>
+                    <option value="lucky">Lucky</option>
                 </select>
                 <button onclick="bulkAction('change_matter')" 
                         style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
@@ -346,7 +346,7 @@
                 {# Réinitialiser #}
                 <button onclick="bulkAction('reset_to_base')" 
                         style="background-color: #ffc107; color: #000; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                    🔄 Réinitialiser (Base)
+                    Réinitialiser (Base)
                 </button>
                 
                 {# Dupliquer #}
@@ -358,13 +358,13 @@
                        style="width: 60px; padding: 10px; border-radius: 5px; border: none; text-align: center;">
                 <button onclick="bulkAction('duplicate')" 
                         style="background-color: #17a2b8; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                    📋 Dupliquer ×
+                    Dupliquer ×
                 </button>
                 
                 {# Désélectionner tout #}
                 <button onclick="deselectAll()" 
                         style="background-color: #6c757d; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                    ❌ Désélectionner
+                    Désélectionner
                 </button>
             </div>
         </div>

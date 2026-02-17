@@ -9,24 +9,24 @@
     </a>
 </div>
 
-<h1>🔮 Consommables - {{ partie.identifiant }}</h1>
+<h1>Consommables - {{ partie.identifiant }}</h1>
 
 {# Messages flash #}
 {% for message in app.flashes('success') %}
     <div style="background-color: #28a745; color: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
-        ✅ {{ message }}
+        {{ message }}
     </div>
 {% endfor %}
 
 {% for message in app.flashes('error') %}
     <div style="background-color: #dc3545; color: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
-        ❌ {{ message }}
+        {{ message }}
     </div>
 {% endfor %}
 
 {# Statistiques #}
 <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
-    <h3 style="margin-top: 0;">📊 Statistiques</h3>
+    <h3 style="margin-top: 0;">Statistiques</h3>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
         <div>
             <strong>Total :</strong> {{ partie.consommables|length }}
@@ -36,15 +36,15 @@
             {{ partie.consommables|filter(c => c.category.value == 'planet')|length }}
         </div>
         <div>
-            <strong>🎴 Tarots :</strong>
+            <strong>Tarots :</strong>
             {{ partie.consommables|filter(c => c.category.value == 'tarot')|length }}
         </div>
         <div>
-            <strong>👻 Spectres :</strong>
+            <strong>Spectres :</strong>
             {{ partie.consommables|filter(c => c.category.value == 'spectral')|length }}
         </div>
         <div>
-            <strong>⚫ Négatifs :</strong>
+            <strong>Négatifs :</strong>
             {{ partie.consommables|filter(c => c.status.value == 'negative')|length }}
         </div>
     </div>
@@ -58,20 +58,20 @@
               style="display: inline;">
             <input type="hidden" name="_token" value="{{ csrf_token('clear_consommables') }}">
             <button type="submit" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                🗑️ Tout retirer
+                Tout retirer
             </button>
         </form>
     {% endif %}
     
     <button onclick="document.getElementById('add-consommable-form').style.display='block'" 
             style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-        ➕ Ajouter un consommable
+        Ajouter un consommable
     </button>
 </div>
 
 {# Formulaire d'ajout #}
 <div id="add-consommable-form" style="display: none; background-color: white; padding: 25px; border-radius: 10px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); margin: 20px 0;">
-    <h3>➕ Ajouter un consommable</h3>
+    <h3>Ajouter un consommable</h3>
     <form method="post" action="{{ path('partie_consommables_add', {'partieId': partie.id}) }}">
         <input type="hidden" name="_token" value="{{ csrf_token('consommable_add') }}">
         
@@ -80,9 +80,9 @@
                 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Catégorie</label>
                 <select name="category" id="category-select" class="form-control" required onchange="updateTypeOptions()">
                     <option value="">Choisir...</option>
-                    <option value="tarot">🎴 Tarot</option>
-                    <option value="planet">🪐 Planète</option>
-                    <option value="spectral">👻 Spectre</option>
+                    <option value="tarot">Tarot</option>
+                    <option value="planet">Planète</option>
+                    <option value="spectral">Spectre</option>
                 </select>
             </div>
             
@@ -97,18 +97,18 @@
                 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Statut</label>
                 <select name="status" class="form-control">
                     <option value="base">Base</option>
-                    <option value="negative">Négatif ⚫</option>
+                    <option value="negative">Négatif</option>
                 </select>
             </div>
         </div>
         
         <div style="display: flex; gap: 10px;">
             <button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                ✅ Ajouter
+                Ajouter
             </button>
             <button type="button" onclick="document.getElementById('add-consommable-form').style.display='none'" 
                     style="background-color: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                ❌ Annuler
+                Annuler
             </button>
         </div>
     </form>
@@ -118,7 +118,7 @@
 
 {# Affichage des consommables #}
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-    <h2 style="margin: 0;">🔮 Mes Consommables ({{ partie.consommables|length }})</h2>
+    <h2 style="margin: 0;">Mes Consommables ({{ partie.consommables|length }})</h2>
     {% if partie.consommables|length > 0 %}
         <label style="cursor: pointer; user-select: none;">
             <input type="checkbox" id="select-all" style="margin-right: 5px; transform: scale(1.2);">
@@ -156,18 +156,9 @@
                        value="{{ consommable.id }}"
                        style="position: absolute; top: 10px; left: 10px; transform: scale(1.5); cursor: pointer; z-index: 10;">
                 
-                {# Badge catégorie #}
-                <div style="text-align: center; margin-bottom: 10px; font-size: 2.5em;">
-                    {% if consommable.category.value == 'planet' %}🪐
-                    {% elseif consommable.category.value == 'tarot' %}🎴
-                    {% else %}👻
-                    {% endif %}
-                </div>
-                
                 {# Nom #}
                 <h4 style="margin: 10px 0; text-align: center; color: #333;">
                     {{ consommable.name }}
-                    {% if consommable.status.value == 'negative' %} ⚫{% endif %}
                 </h4>
                 
                 {# Description #}
@@ -197,7 +188,7 @@
                     <button type="submit" 
                             onclick="return confirm('Retirer ce consommable ?');"
                             style="background-color: #dc3545; color: white; padding: 8px 12px; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85em; width: 100%;">
-                        🗑️ Retirer
+                        Retirer
                     </button>
                 </form>
             </div>
@@ -206,7 +197,7 @@
 {% else %}
     <div style="background-color: #f8f9fa; padding: 40px; text-align: center; border-radius: 10px; margin: 20px 0;">
         <p style="font-size: 1.2em; color: #6c757d;">
-            🔮 Aucun consommable
+            Aucun consommable
         </p>
         <p style="color: #999;">
             Ajoutez des planètes, tarots ou spectres
@@ -237,14 +228,14 @@
                 {# Supprimer #}
                 <button onclick="bulkAction('delete')" 
                         style="background-color: #dc3545; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                    🗑️ Supprimer
+                    Supprimer
                 </button>
                 
                 {# Modifier le statut #}
                 <select id="bulk-status" style="padding: 10px; border-radius: 5px; border: none;">
                     <option value="">-- Changer statut --</option>
                     <option value="base">Base</option>
-                    <option value="negative">Négatif ⚫</option>
+                    <option value="negative">Négatif</option>
                 </select>
                 <button onclick="bulkAction('change_status')" 
                         style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
@@ -260,13 +251,13 @@
                        style="width: 60px; padding: 10px; border-radius: 5px; border: none; text-align: center;">
                 <button onclick="bulkAction('duplicate')" 
                         style="background-color: #17a2b8; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                    📋 Dupliquer ×
+                    Dupliquer ×
                 </button>
                 
                 {# Désélectionner tout #}
                 <button onclick="deselectAll()" 
                         style="background-color: #6c757d; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                    ❌ Désélectionner
+                    Désélectionner
                 </button>
             </div>
         </div>

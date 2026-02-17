@@ -6,12 +6,12 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <h1 class="mb-4">🃏 Créer un nouveau Joker</h1>
+            <h1 class="mb-4">Créer un nouveau Joker</h1>
             
             {# Afficher les messages flash #}
             {% for message in app.flashes('success') %}
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    ✅ {{ message }}
+                    {{ message }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             {% endfor %}
@@ -48,7 +48,7 @@
                     {# Boutons #}
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="bi bi-plus-circle"></i> ✨ Créer le Joker
+                            <i class="bi bi-plus-circle"></i> Créer le Joker
                         </button>
                         <a href="{{ path('about') }}" class="btn btn-secondary btn-lg">
                             ← Retour à la liste
@@ -60,7 +60,7 @@
             </div>
             
             <div class="alert alert-warning mt-4" role="alert">
-                <strong>💡 Astuce :</strong> Les données soumises seront affichées dans le Profiler Symfony en bas de page (barre de debug en mode dev).
+                <strong>Astuce :</strong> Les données soumises seront affichées dans le Profiler Symfony en bas de page (barre de debug en mode dev).
             </div>
         </div>
     </div>

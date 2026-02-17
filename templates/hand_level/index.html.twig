@@ -10,7 +10,7 @@
             <a href="{{ path('partie_show', {id: partie.id}) }}" style="color: #007bff; text-decoration: none;">
                 ← Retour à la partie
             </a>
-            <h1 style="margin: 10px 0 0 0;">📊 Niveaux des Mains - {{ partie.identifiant }}</h1>
+            <h1 style="margin: 10px 0 0 0;">Niveaux des Mains - {{ partie.identifiant }}</h1>
         </div>
         
         {# Actions globales #}
@@ -19,7 +19,7 @@
                   onsubmit="return confirm('Améliorer toutes les mains de 1 niveau ?');" style="display: inline;">
                 <input type="hidden" name="_token" value="{{ csrf_token('hand_levels_upgrade_all') }}">
                 <button type="submit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
-                    🕳️ Black Hole (+1 à toutes)
+                    Black Hole (+1 à toutes)
                 </button>
             </form>
             
@@ -27,7 +27,7 @@
                   onsubmit="return confirm('Réinitialiser TOUS les niveaux à 0 ?');" style="display: inline;">
                 <input type="hidden" name="_token" value="{{ csrf_token('hand_levels_reset') }}">
                 <button type="submit" style="background-color: #dc3545; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                    🔄 Réinitialiser tout
+                    Réinitialiser tout
                 </button>
             </form>
         </div>
@@ -36,13 +36,13 @@
     {# Messages flash #}
     {% for message in app.flashes('success') %}
         <div style="background-color: #28a745; color: white; padding: 15px; border-radius: 8px; margin: 15px 0;">
-            ✅ {{ message }}
+            {{ message }}
         </div>
     {% endfor %}
 
     {% for message in app.flashes('error') %}
         <div style="background-color: #dc3545; color: white; padding: 15px; border-radius: 8px; margin: 15px 0;">
-            ❌ {{ message }}
+            {{ message }}
         </div>
     {% endfor %}
 
@@ -104,12 +104,12 @@
                 {# Informations de progression #}
                 <div style="background-color: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85em; color: #666;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span>📈 Par niveau:</span>
+                        <span>Par niveau:</span>
                         <span style="font-weight: bold; color: #333;">+{{ data.config.chipsPerLevel }} chips, +{{ data.config.multPerLevel }} mult</span>
                     </div>
                     {% if data.level > 0 %}
                         <div style="display: flex; justify-content: space-between;">
-                            <span>🔻 Prochain niveau:</span>
+                            <span>Prochain niveau:</span>
                             <span style="font-weight: bold; color: #10b981;">
                                 {{ data.chips + data.config.chipsPerLevel }} chips, x{{ data.mult + data.config.multPerLevel }}
                             </span>
@@ -146,7 +146,7 @@
 
     {# Légende #}
     <div style="margin-top: 40px; padding: 20px; background-color: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
-        <h3 style="margin-top: 0;">ℹ️ Informations</h3>
+        <h3 style="margin-top: 0;">Informations</h3>
         <ul style="margin: 0; padding-left: 20px;">
             <li style="margin: 8px 0;">Chaque niveau augmente les <strong>chips</strong> et le <strong>mult</strong> de la main</li>
             <li style="margin: 8px 0;">Les <strong>cartes Planètes</strong> permettent d'améliorer une main spécifique</li>

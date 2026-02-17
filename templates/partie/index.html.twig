@@ -3,25 +3,25 @@
 {% block title %}Mes Parties - BALATRO SIMULATOR{% endblock %}
 
 {% block body %}
-<h1>🎮 Mes Parties</h1>
+<h1>Mes Parties</h1>
 
 {# Messages flash #}
 {% for message in app.flashes('success') %}
     <div style="background-color: #28a745; color: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
-        ✅ {{ message }}
+        {{ message }}
     </div>
 {% endfor %}
 
 {% for message in app.flashes('error') %}
     <div style="background-color: #dc3545; color: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
-        ❌ {{ message }}
+        {{ message }}
     </div>
 {% endfor %}
 
 <div style="margin: 20px 0;">
     <a href="{{ path('partie_new') }}" 
        style="background-color: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
-        ➕ Créer une nouvelle partie
+        Créer une nouvelle partie
     </a>
 </div>
 
@@ -30,31 +30,31 @@
         {% for partie in parties %}
             <div style="border: 2px solid #ddd; border-radius: 10px; padding: 20px; background-color: white; box-shadow: 2px 2px 10px rgba(0,0,0,0.1);">
                 <h3 style="margin-top: 0; color: #333;">
-                    🎲 {{ partie.identifiant }}
+                    {{ partie.identifiant }}
                 </h3>
                 
                 <div style="margin: 15px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
                     <p style="margin: 5px 0;">
-                        <strong>💰 Argent :</strong> {{ partie.money }}$
+                        <strong>Argent :</strong> {{ partie.money }}$
                     </p>
                     <p style="margin: 5px 0;">
-                        <strong>🃏 Main :</strong> {{ partie.hand }} cartes
+                        <strong>Main :</strong> {{ partie.hand }} cartes
                     </p>
                     <p style="margin: 5px 0;">
-                        <strong>🗑️ Défausses :</strong> {{ partie.discard }}
+                        <strong>Défausses :</strong> {{ partie.discard }}
                     </p>
                     <p style="margin: 5px 0;">
-                        <strong>🤡 Jokers :</strong> {{ partie.jokers|length }}/5
+                        <strong>Jokers :</strong> {{ partie.jokers|length }}/5
                     </p>
                     <p style="margin: 5px 0;">
-                        <strong>👤 Joueur :</strong> {{ partie.user.username }}
+                        <strong>Joueur :</strong> {{ partie.user.username }}
                     </p>
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
                     <a href="{{ path('partie_show', {'id': partie.id}) }}" 
                        style="flex: 1; text-align: center; padding: 10px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">
-                        👁️ Voir
+                        Voir
                     </a>
                     <form method="post" action="{{ path('partie_delete', {'id': partie.id}) }}" 
                           style="flex: 1; margin: 0;"
@@ -62,7 +62,7 @@
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ partie.id) }}">
                         <button type="submit" 
                                 style="width: 100%; padding: 10px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                            🗑️ Supprimer
+                            Supprimer
                         </button>
                     </form>
                 </div>
@@ -72,7 +72,7 @@
 {% else %}
     <div style="background-color: #fff3cd; color: #856404; padding: 20px; border-radius: 5px; margin: 20px 0;">
         <p style="margin: 0;">
-            ⚠️ Aucune partie trouvée. Créez votre première partie pour commencer !
+            Aucune partie trouvée. Créez votre première partie pour commencer !
         </p>
     </div>
 {% endif %}

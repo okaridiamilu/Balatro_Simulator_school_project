@@ -1,0 +1,83 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Connexion - BALATRO SIMULATOR{% endblock %}
+
+{% block body %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px;">
+    
+    <div style="background-color: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-width: 450px; width: 100%;">
+        
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="margin: 0; color: #667eea;">🔐 Connexion</h1>
+            <p style="color: #666; margin: 10px 0 0 0;">Connectez-vous à votre compte</p>
+        </div>
+
+        {% if error %}
+            <div style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+                <strong>❌ Erreur !</strong> {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+        {% endif %}
+
+        {% for message in app.flashes('success') %}
+            <div style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+                ✅ {{ message }}
+            </div>
+        {% endfor %}
+
+        <form method="post" action="{{ path('app_login') }}">
+            <div style="margin-bottom: 20px;">
+                <label for="username" style="display: block; font-weight: bold; margin-bottom: 8px; color: #333;">
+                    Nom d'utilisateur
+                </label>
+                <input type="text" 
+                       id="username" 
+                       name="_username" 
+                       value="{{ last_username }}" 
+                       required
+                       autofocus
+                       style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em; box-sizing: border-box;"
+                       placeholder="Entrez votre nom d'utilisateur">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label for="password" style="display: block; font-weight: bold; margin-bottom: 8px; color: #333;">
+                    Mot de passe
+                </label>
+                <input type="password" 
+                       id="password" 
+                       name="_password" 
+                       required
+                       style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em; box-sizing: border-box;"
+                       placeholder="Entrez votre mot de passe">
+            </div>
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <button type="submit" 
+                    style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border: none; border-radius: 8px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: transform 0.2s;"
+                    onmouseover="this.style.transform='translateY(-2px)'"
+                    onmouseout="this.style.transform='translateY(0)'">
+                🚀 Se connecter
+            </button>
+        </form>
+
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+
+        <div style="text-align: center;">
+            <p style="color: #666; margin: 0 0 15px 0;">Pas encore de compte ?</p>
+            <a href="{{ path('app_register') }}" 
+               style="display: inline-block; background-color: #28a745; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: transform 0.2s;"
+               onmouseover="this.style.transform='translateY(-2px)'"
+               onmouseout="this.style.transform='translateY(0)'">
+                ✨ Créer un compte
+            </a>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{{ path('app_home') }}" style="color: #667eea; text-decoration: none;">
+                ← Retour à l'accueil
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

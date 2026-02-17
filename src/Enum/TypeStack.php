@@ -4,6 +4,7 @@ namespace App\Enum;
 
 enum TypeStack: string
 {
+    case NONE = 'none';                 // Pas de stacks (effet conditionnel seulement)
     case CHIPS = 'chips';               // Chips additifs (+30)
     case MULT_FLAT = 'mult_flat';       // Multiplicateurs plats (+3)
     case MULT_MULTIPLICATEUR = 'mult_multiplicateur';  // Multiplicateurs multiplicatifs (x1.5)

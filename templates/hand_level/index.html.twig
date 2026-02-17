@@ -1,0 +1,158 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Hand Levels - {{ partie.identifiant }}{% endblock %}
+
+{% block body %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    {# Header #}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <a href="{{ path('partie_show', {id: partie.id}) }}" style="color: #007bff; text-decoration: none;">
+                ← Retour à la partie
+            </a>
+            <h1 style="margin: 10px 0 0 0;">📊 Niveaux des Mains - {{ partie.identifiant }}</h1>
+        </div>
+        
+        {# Actions globales #}
+        <div style="display: flex; gap: 10px;">
+            <form method="post" action="{{ path('hand_levels_upgrade_all', {partieId: partie.id}) }}" 
+                  onsubmit="return confirm('Améliorer toutes les mains de 1 niveau ?');" style="display: inline;">
+                <input type="hidden" name="_token" value="{{ csrf_token('hand_levels_upgrade_all') }}">
+                <button type="submit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                    🕳️ Black Hole (+1 à toutes)
+                </button>
+            </form>
+            
+            <form method="post" action="{{ path('hand_levels_reset', {partieId: partie.id}) }}" 
+                  onsubmit="return confirm('Réinitialiser TOUS les niveaux à 0 ?');" style="display: inline;">
+                <input type="hidden" name="_token" value="{{ csrf_token('hand_levels_reset') }}">
+                <button type="submit" style="background-color: #dc3545; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    🔄 Réinitialiser tout
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {# Messages flash #}
+    {% for message in app.flashes('success') %}
+        <div style="background-color: #28a745; color: white; padding: 15px; border-radius: 8px; margin: 15px 0;">
+            ✅ {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div style="background-color: #dc3545; color: white; padding: 15px; border-radius: 8px; margin: 15px 0;">
+            ❌ {{ message }}
+        </div>
+    {% endfor %}
+
+    {# Statistiques globales #}
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; text-align: center;">
+            {% set totalLevels = 0 %}
+            {% for key, data in handsData %}
+                {% set totalLevels = totalLevels + data.level %}
+            {% endfor %}
+            
+            <div>
+                <div style="font-size: 2.5em; font-weight: bold;">{{ totalLevels }}</div>
+                <div style="font-size: 0.9em; opacity: 0.9;">Niveaux Totaux</div>
+            </div>
+            <div>
+                <div style="font-size: 2.5em; font-weight: bold;">{{ handsData|length }}</div>
+                <div style="font-size: 0.9em; opacity: 0.9;">Types de Mains</div>
+            </div>
+            <div>
+                <div style="font-size: 2.5em; font-weight: bold;">
+                    {{ (totalLevels / handsData|length)|round(1) }}
+                </div>
+                <div style="font-size: 0.9em; opacity: 0.9;">Niveau Moyen</div>
+            </div>
+        </div>
+    </div>
+
+    {# Liste des mains #}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
+        {% for key, data in handsData %}
+            <div style="background-color: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 2px solid #e0e0e0; transition: transform 0.2s, box-shadow 0.2s;" 
+                 onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.15)';"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)';">
+                
+                {# En-tête de la main #}
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 2em;">{{ data.config.icon }}</span>
+                        <div>
+                            <div style="font-weight: bold; font-size: 1.1em; color: #333;">{{ data.config.name }}</div>
+                            <div style="font-size: 0.9em; color: #666;">Niveau {{ data.level }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Stats actuelles #}
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 0.8em; opacity: 0.9; margin-bottom: 5px;">CHIPS</div>
+                        <div style="font-size: 1.8em; font-weight: bold;">{{ data.chips }}</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 0.8em; opacity: 0.9; margin-bottom: 5px;">MULT</div>
+                        <div style="font-size: 1.8em; font-weight: bold;">x{{ data.mult }}</div>
+                    </div>
+                </div>
+
+                {# Informations de progression #}
+                <div style="background-color: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85em; color: #666;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>📈 Par niveau:</span>
+                        <span style="font-weight: bold; color: #333;">+{{ data.config.chipsPerLevel }} chips, +{{ data.config.multPerLevel }} mult</span>
+                    </div>
+                    {% if data.level > 0 %}
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>🔻 Prochain niveau:</span>
+                            <span style="font-weight: bold; color: #10b981;">
+                                {{ data.chips + data.config.chipsPerLevel }} chips, x{{ data.mult + data.config.multPerLevel }}
+                            </span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Boutons de contrôle #}
+                <div style="display: flex; gap: 10px;">
+                    <form method="post" action="{{ path('hand_level_update', {partieId: partie.id, handType: key, amount: -1}) }}" style="flex: 1;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('hand_level_update') }}">
+                        <button type="submit" 
+                                style="width: 100%; background-color: #dc3545; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; transition: background-color 0.2s;"
+                                onmouseover="this.style.backgroundColor='#c82333'"
+                                onmouseout="this.style.backgroundColor='#dc3545'"
+                                {% if data.level == 0 %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
+                            - 1
+                        </button>
+                    </form>
+
+                    <form method="post" action="{{ path('hand_level_update', {partieId: partie.id, handType: key, amount: 1}) }}" style="flex: 1;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('hand_level_update') }}">
+                        <button type="submit" 
+                                style="width: 100%; background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; transition: background-color 0.2s;"
+                                onmouseover="this.style.backgroundColor='#218838'"
+                                onmouseout="this.style.backgroundColor='#28a745'">
+                            + 1
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {# Légende #}
+    <div style="margin-top: 40px; padding: 20px; background-color: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
+        <h3 style="margin-top: 0;">ℹ️ Informations</h3>
+        <ul style="margin: 0; padding-left: 20px;">
+            <li style="margin: 8px 0;">Chaque niveau augmente les <strong>chips</strong> et le <strong>mult</strong> de la main</li>
+            <li style="margin: 8px 0;">Les <strong>cartes Planètes</strong> permettent d'améliorer une main spécifique</li>
+            <li style="margin: 8px 0;">La carte <strong>Black Hole</strong> améliore toutes les mains de 1 niveau</li>
+            <li style="margin: 8px 0;">Score d'une main = (Chips de base + Chips des cartes) × Mult total</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

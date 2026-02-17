@@ -1,0 +1,505 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Consommables - {{ partie.identifiant }} - BALATRO SIMULATOR{% endblock %}
+
+{% block body %}
+<div style="margin-bottom: 20px;">
+    <a href="{{ path('partie_show', {'id': partie.id}) }}" style="color: #007bff; text-decoration: none;">
+        ← Retour à la partie
+    </a>
+</div>
+
+<h1>🔮 Consommables - {{ partie.identifiant }}</h1>
+
+{# Messages flash #}
+{% for message in app.flashes('success') %}
+    <div style="background-color: #28a745; color: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
+        ✅ {{ message }}
+    </div>
+{% endfor %}
+
+{% for message in app.flashes('error') %}
+    <div style="background-color: #dc3545; color: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
+        ❌ {{ message }}
+    </div>
+{% endfor %}
+
+{# Statistiques #}
+<div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+    <h3 style="margin-top: 0;">📊 Statistiques</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        <div>
+            <strong>Total :</strong> {{ partie.consommables|length }}
+        </div>
+        <div>
+            <strong>🪐 Planètes :</strong>
+            {{ partie.consommables|filter(c => c.category.value == 'planet')|length }}
+        </div>
+        <div>
+            <strong>🎴 Tarots :</strong>
+            {{ partie.consommables|filter(c => c.category.value == 'tarot')|length }}
+        </div>
+        <div>
+            <strong>👻 Spectres :</strong>
+            {{ partie.consommables|filter(c => c.category.value == 'spectral')|length }}
+        </div>
+        <div>
+            <strong>⚫ Négatifs :</strong>
+            {{ partie.consommables|filter(c => c.status.value == 'negative')|length }}
+        </div>
+    </div>
+</div>
+
+{# Actions rapides #}
+<div style="display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap;">
+    {% if partie.consommables|length > 0 %}
+        <form method="post" action="{{ path('partie_consommables_clear', {'partieId': partie.id}) }}" 
+              onsubmit="return confirm('Êtes-vous sûr de vouloir retirer tous les consommables ?');"
+              style="display: inline;">
+            <input type="hidden" name="_token" value="{{ csrf_token('clear_consommables') }}">
+            <button type="submit" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                🗑️ Tout retirer
+            </button>
+        </form>
+    {% endif %}
+    
+    <button onclick="document.getElementById('add-consommable-form').style.display='block'" 
+            style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+        ➕ Ajouter un consommable
+    </button>
+</div>
+
+{# Formulaire d'ajout #}
+<div id="add-consommable-form" style="display: none; background-color: white; padding: 25px; border-radius: 10px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); margin: 20px 0;">
+    <h3>➕ Ajouter un consommable</h3>
+    <form method="post" action="{{ path('partie_consommables_add', {'partieId': partie.id}) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('consommable_add') }}">
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0;">
+            <div>
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Catégorie</label>
+                <select name="category" id="category-select" class="form-control" required onchange="updateTypeOptions()">
+                    <option value="">Choisir...</option>
+                    <option value="tarot">🎴 Tarot</option>
+                    <option value="planet">🪐 Planète</option>
+                    <option value="spectral">👻 Spectre</option>
+                </select>
+            </div>
+            
+            <div>
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Type</label>
+                <select name="type" id="type-select" class="form-control" required>
+                    <option value="">Sélectionnez d'abord une catégorie</option>
+                </select>
+            </div>
+            
+            <div>
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Statut</label>
+                <select name="status" class="form-control">
+                    <option value="base">Base</option>
+                    <option value="negative">Négatif ⚫</option>
+                </select>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                ✅ Ajouter
+            </button>
+            <button type="button" onclick="document.getElementById('add-consommable-form').style.display='none'" 
+                    style="background-color: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                ❌ Annuler
+            </button>
+        </div>
+    </form>
+</div>
+
+<hr style="margin: 40px 0;">
+
+{# Affichage des consommables #}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+    <h2 style="margin: 0;">🔮 Mes Consommables ({{ partie.consommables|length }})</h2>
+    {% if partie.consommables|length > 0 %}
+        <label style="cursor: pointer; user-select: none;">
+            <input type="checkbox" id="select-all" style="margin-right: 5px; transform: scale(1.2);">
+            <strong>Tout sélectionner</strong>
+        </label>
+    {% endif %}
+</div>
+
+{% if partie.consommables|length > 0 %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin: 20px 0;">
+        {% for consommable in partie.consommables %}
+            <div class="consommable-item" data-consommable-id="{{ consommable.id }}" style="
+                border: 3px solid 
+                {% if consommable.category.value == 'planet' %}
+                    #007bff
+                {% elseif consommable.category.value == 'tarot' %}
+                    #dc3545
+                {% else %}
+                    #6f42c1
+                {% endif %}
+                ; 
+                border-radius: 10px; 
+                padding: 20px; 
+                background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+                position: relative;
+                cursor: pointer;
+                transition: all 0.2s;
+                {% if consommable.status.value == 'negative' %}
+                    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+                {% endif %}
+            ">
+                {# Checkbox de sélection #}
+                <input type="checkbox" 
+                       class="consommable-checkbox" 
+                       value="{{ consommable.id }}"
+                       style="position: absolute; top: 10px; left: 10px; transform: scale(1.5); cursor: pointer; z-index: 10;">
+                
+                {# Badge catégorie #}
+                <div style="text-align: center; margin-bottom: 10px; font-size: 2.5em;">
+                    {% if consommable.category.value == 'planet' %}🪐
+                    {% elseif consommable.category.value == 'tarot' %}🎴
+                    {% else %}👻
+                    {% endif %}
+                </div>
+                
+                {# Nom #}
+                <h4 style="margin: 10px 0; text-align: center; color: #333;">
+                    {{ consommable.name }}
+                    {% if consommable.status.value == 'negative' %} ⚫{% endif %}
+                </h4>
+                
+                {# Description #}
+                <p style="font-size: 0.85em; color: #666; font-style: italic; text-align: center; min-height: 40px;">
+                    {{ consommable.description|slice(0, 80) }}{% if consommable.description|length > 80 %}...{% endif %}
+                </p>
+                
+                {# Badges #}
+                <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; margin: 10px 0;">
+                    <span style="background-color: 
+                        {% if consommable.category.value == 'planet' %}#007bff
+                        {% elseif consommable.category.value == 'tarot' %}#dc3545
+                        {% else %}#6f42c1
+                        {% endif %}
+                        ; color: white; padding: 3px 8px; border-radius: 3px; font-size: 0.8em;">
+                        {{ consommable.category.value|upper }}
+                    </span>
+                    
+                    <span style="background-color: #6c757d; color: white; padding: 3px 8px; border-radius: 3px; font-size: 0.8em;">
+                        {{ consommable.type.value|upper }}
+                    </span>
+                </div>
+                
+                {# Bouton supprimer #}
+                <form method="post" action="{{ path('partie_consommables_remove', {'partieId': partie.id, 'consommableId': consommable.id}) }}" 
+                      style="margin-top: 10px;">
+                    <button type="submit" 
+                            onclick="return confirm('Retirer ce consommable ?');"
+                            style="background-color: #dc3545; color: white; padding: 8px 12px; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85em; width: 100%;">
+                        🗑️ Retirer
+                    </button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div style="background-color: #f8f9fa; padding: 40px; text-align: center; border-radius: 10px; margin: 20px 0;">
+        <p style="font-size: 1.2em; color: #6c757d;">
+            🔮 Aucun consommable
+        </p>
+        <p style="color: #999;">
+            Ajoutez des planètes, tarots ou spectres
+        </p>
+    </div>
+{% endif %}
+
+{# Barre d'actions groupées #}
+<div id="bulk-actions-bar" style="
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #343a40;
+    color: white;
+    padding: 20px;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+    z-index: 1000;
+">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <strong id="selected-count">0</strong> consommable(s) sélectionné(s)
+            </div>
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                {# Supprimer #}
+                <button onclick="bulkAction('delete')" 
+                        style="background-color: #dc3545; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                    🗑️ Supprimer
+                </button>
+                
+                {# Modifier le statut #}
+                <select id="bulk-status" style="padding: 10px; border-radius: 5px; border: none;">
+                    <option value="">-- Changer statut --</option>
+                    <option value="base">Base</option>
+                    <option value="negative">Négatif ⚫</option>
+                </select>
+                <button onclick="bulkAction('change_status')" 
+                        style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                    Appliquer statut
+                </button>
+                
+                {# Dupliquer #}
+                <input type="number" 
+                       id="duplicate-count" 
+                       value="1" 
+                       min="1" 
+                       max="10" 
+                       style="width: 60px; padding: 10px; border-radius: 5px; border: none; text-align: center;">
+                <button onclick="bulkAction('duplicate')" 
+                        style="background-color: #17a2b8; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                    📋 Dupliquer ×
+                </button>
+                
+                {# Désélectionner tout #}
+                <button onclick="deselectAll()" 
+                        style="background-color: #6c757d; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                    ❌ Désélectionner
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Types par catégorie
+const typesByCategory = {
+    tarot: [
+        {value: 'fool', label: 'The Fool'},
+        {value: 'magician', label: 'The Magician'},
+        {value: 'high_priest', label: 'The High Priestess'},
+        {value: 'empress', label: 'The Empress'},
+        {value: 'emperor', label: 'The Emperor'},
+        {value: 'hierophant', label: 'The Hierophant'},
+        {value: 'lovers', label: 'The Lovers'},
+        {value: 'chariot', label: 'The Chariot'},
+        {value: 'justice', label: 'Justice'},
+        {value: 'hermit', label: 'The Hermit'},
+        {value: 'wheel', label: 'Wheel of Fortune'},
+        {value: 'strength', label: 'Strength'},
+        {value: 'hanged_man', label: 'The Hanged Man'},
+        {value: 'death', label: 'Death'},
+        {value: 'temperance', label: 'Temperance'},
+        {value: 'devil', label: 'The Devil'},
+        {value: 'tower', label: 'The Tower'},
+        {value: 'star', label: 'The Star'},
+        {value: 'moon', label: 'The Moon'},
+        {value: 'sun', label: 'The Sun'},
+        {value: 'judgment', label: 'Judgement'},
+        {value: 'world', label: 'The World'}
+    ],
+    planet: [
+        {value: 'mercury', label: 'Mercury (Paire)'},
+        {value: 'venus', label: 'Venus (Trois)'},
+        {value: 'earth', label: 'Earth (Full)'},
+        {value: 'mars', label: 'Mars (Quatre)'},
+        {value: 'jupiter', label: 'Jupiter (Quinte Flush)'},
+        {value: 'saturn', label: 'Saturn (Quinte)'},
+        {value: 'uranus', label: 'Uranus (Double Paire)'},
+        {value: 'neptune', label: 'Neptune (Flush)'},
+        {value: 'pluto', label: 'Pluto (Carte haute)'},
+        {value: 'planetX', label: 'Planet X (Quinte Flush Royale)'},
+        {value: 'ceres', label: 'Ceres'},
+        {value: 'eris', label: 'Eris'}
+    ],
+    spectral: [
+        {value: 'familiar', label: 'Familiar'},
+        {value: 'grim', label: 'Grim'},
+        {value: 'incantation', label: 'Incantation'},
+        {value: 'talisman', label: 'Talisman'},
+        {value: 'aura', label: 'Aura'},
+        {value: 'wraith', label: 'Wraith'},
+        {value: 'sigil', label: 'Sigil'},
+        {value: 'ouija', label: 'Ouija'},
+        {value: 'ectoplasm', label: 'Ectoplasm'},
+        {value: 'immolate', label: 'Immolate'},
+        {value: 'ankh', label: 'Ankh'},
+        {value: 'dejavu', label: 'Deja Vu'},
+        {value: 'hex', label: 'Hex'},
+        {value: 'trance', label: 'Trance'},
+        {value: 'medium', label: 'Medium'},
+        {value: 'cryptid', label: 'Cryptid'},
+        {value: 'soul', label: 'Soul'},
+        {value: 'blackhole', label: 'Black Hole'}
+    ]
+};
+
+function updateTypeOptions() {
+    const categorySelect = document.getElementById('category-select');
+    const typeSelect = document.getElementById('type-select');
+    const category = categorySelect.value;
+    
+    typeSelect.innerHTML = '<option value="">Choisir un type...</option>';
+    
+    if (category && typesByCategory[category]) {
+        typesByCategory[category].forEach(type => {
+            const option = document.createElement('option');
+            option.value = type.value;
+            option.textContent = type.label;
+            typeSelect.appendChild(option);
+        });
+    }
+}
+
+// Gestion de la sélection multiple
+const checkboxes = document.querySelectorAll('.consommable-checkbox');
+const selectAllCheckbox = document.getElementById('select-all');
+const bulkActionsBar = document.getElementById('bulk-actions-bar');
+const selectedCountSpan = document.getElementById('selected-count');
+
+if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', function() {
+        checkboxes.forEach(cb => {
+            cb.checked = this.checked;
+            updateConsommableVisual(cb);
+        });
+        updateBulkActionsBar();
+    });
+}
+
+checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function(e) {
+        e.stopPropagation();
+        updateConsommableVisual(this);
+        updateBulkActionsBar();
+    });
+    
+    const consommableItem = checkbox.closest('.consommable-item');
+    consommableItem.addEventListener('click', function(e) {
+        if (e.target.classList.contains('consommable-checkbox') || 
+            e.target.tagName === 'BUTTON' || 
+            e.target.tagName === 'FORM') {
+            return;
+        }
+        checkbox.checked = !checkbox.checked;
+        updateConsommableVisual(checkbox);
+        updateBulkActionsBar();
+    });
+});
+
+function updateConsommableVisual(checkbox) {
+    const consommableItem = checkbox.closest('.consommable-item');
+    if (checkbox.checked) {
+        consommableItem.style.outline = '4px solid #007bff';
+        consommableItem.style.outlineOffset = '2px';
+        consommableItem.style.transform = 'scale(1.05)';
+    } else {
+        consommableItem.style.outline = 'none';
+        consommableItem.style.transform = 'scale(1)';
+    }
+}
+
+function updateBulkActionsBar() {
+    const selectedCount = document.querySelectorAll('.consommable-checkbox:checked').length;
+    selectedCountSpan.textContent = selectedCount;
+    
+    if (selectedCount > 0) {
+        bulkActionsBar.style.display = 'block';
+    } else {
+        bulkActionsBar.style.display = 'none';
+    }
+    
+    if (selectAllCheckbox) {
+        selectAllCheckbox.checked = selectedCount === checkboxes.length && checkboxes.length > 0;
+    }
+}
+
+function deselectAll() {
+    checkboxes.forEach(cb => {
+        cb.checked = false;
+        updateConsommableVisual(cb);
+    });
+    updateBulkActionsBar();
+}
+
+function bulkAction(action) {
+    const selectedIds = Array.from(document.querySelectorAll('.consommable-checkbox:checked'))
+        .map(cb => cb.value);
+    
+    if (selectedIds.length === 0) {
+        alert('Aucun consommable sélectionné !');
+        return;
+    }
+    
+    if (action === 'delete') {
+        if (!confirm(`Êtes-vous sûr de vouloir supprimer ${selectedIds.length} consommable(s) ?`)) {
+            return;
+        }
+    }
+    
+    if (action === 'change_status' && !document.getElementById('bulk-status').value) {
+        alert('Veuillez sélectionner un statut !');
+        return;
+    }
+    
+    if (action === 'duplicate') {
+        const duplicateCount = parseInt(document.getElementById('duplicate-count').value);
+        if (!duplicateCount || duplicateCount < 1 || duplicateCount > 10) {
+            alert('Le nombre de duplications doit être entre 1 et 10 !');
+            return;
+        }
+        if (!confirm(`Créer ${selectedIds.length * duplicateCount} nouveau(x) consommable(s) (${selectedIds.length} × ${duplicateCount}) ?`)) {
+            return;
+        }
+    }
+    
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{{ path('partie_consommables_bulk_action', {'partieId': partie.id}) }}';
+    
+    const csrfToken = document.createElement('input');
+    csrfToken.type = 'hidden';
+    csrfToken.name = '_token';
+    csrfToken.value = '{{ csrf_token('bulk_action_consommables') }}';
+    form.appendChild(csrfToken);
+    
+    const actionInput = document.createElement('input');
+    actionInput.type = 'hidden';
+    actionInput.name = 'action';
+    actionInput.value = action;
+    form.appendChild(actionInput);
+    
+    selectedIds.forEach(id => {
+        const idInput = document.createElement('input');
+        idInput.type = 'hidden';
+        idInput.name = 'consommable_ids[]';
+        idInput.value = id;
+        form.appendChild(idInput);
+    });
+    
+    if (action === 'change_status') {
+        const statusInput = document.createElement('input');
+        statusInput.type = 'hidden';
+        statusInput.name = 'bulk_status';
+        statusInput.value = document.getElementById('bulk-status').value;
+        form.appendChild(statusInput);
+    }
+    
+    if (action === 'duplicate') {
+        const duplicateInput = document.createElement('input');
+        duplicateInput.type = 'hidden';
+        duplicateInput.name = 'duplicate_count';
+        duplicateInput.value = document.getElementById('duplicate-count').value;
+        form.appendChild(duplicateInput);
+    }
+    
+    document.body.appendChild(form);
+    form.submit();
+}
+
+window.addEventListener('load', updateBulkActionsBar);
+</script>
+
+{% endblock %}

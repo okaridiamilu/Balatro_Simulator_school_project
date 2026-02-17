@@ -44,6 +44,9 @@ class Partie
     #[Assert\Positive(message: "Le nombre de slots de jokers doit être positif")]
     private int $jokerSlots = 5;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $observatoireActif = false;
+
     // Relation ManyToOne vers User
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'parties')]
     #[ORM\JoinColumn(nullable: false)]
@@ -283,6 +286,17 @@ class Partie
     public function removeConsommable(Consommable $consommable): static
     {
         $this->consommables->removeElement($consommable);
+        return $this;
+    }
+
+    public function isObservatoireActif(): bool
+    {
+        return $this->observatoireActif;
+    }
+
+    public function setObservatoireActif(bool $observatoireActif): static
+    {
+        $this->observatoireActif = $observatoireActif;
         return $this;
     }
 }

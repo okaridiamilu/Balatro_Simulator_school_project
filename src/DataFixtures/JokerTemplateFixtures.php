@@ -32,8 +32,8 @@ class JokerTemplateFixtures extends Fixture
             ->setImage('/images/jokers/baron.png')
             ->setEffetCode('baron')
             ->setConditionActivation(['trigger' => 'card_held', 'card_rank' => 'King'])
-            ->setTypeStack(TypeStack::XMULT)
-            ->setStackParUnite(1.5);
+            ->setTypeStack(TypeStack::NONE)
+            ->setStackParUnite(0);
         $manager->persist($baron);
 
         // 3. JOKER - Simple bonus de chips

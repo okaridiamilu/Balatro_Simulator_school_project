@@ -138,7 +138,24 @@ class JokerInstance
             return 0;
         }
 
+        // Les jokers sans stack retournent 0
+        if ($this->jokerTemplate->getTypeStack() === \App\Enum\TypeStack::NONE) {
+            return 0;
+        }
+
         return $this->jokerTemplate->getStackParUnite() * $this->compteurStack;
+    }
+
+    /**
+     * Vérifie si ce joker utilise un système de stacks modifiable
+     */
+    public function hasManualStack(): bool
+    {
+        if (!$this->jokerTemplate) {
+            return false;
+        }
+
+        return $this->jokerTemplate->getTypeStack() !== \App\Enum\TypeStack::NONE;
     }
 
     /**

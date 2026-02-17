@@ -19,12 +19,14 @@ use Symfony\Component\Routing\Attribute\Route;
 class PartieController extends AbstractController
 {
     /**
-     * Liste toutes les parties
+     * Liste toutes les parties de l'utilisateur connecté
      */
     #[Route('/', name: 'partie_index')]
     public function index(EntityManagerInterface $em): Response
     {
-        $parties = $em->getRepository(Partie::class)->findAll();
+        // Récupérer uniquement les parties de l'utilisateur connecté
+        $user = $this->getUser();
+        $parties = $em->getRepository(Partie::class)->findBy(['user' => $user]);
         
         return $this->render('partie/index.html.twig', [
             'parties' => $parties,
@@ -37,14 +39,8 @@ class PartieController extends AbstractController
     #[Route('/new', name: 'partie_new')]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
-        // Pour l'instant, on utilise le premier user en base
-        // Plus tard, on utilisera le système d'authentification
-        $user = $em->getRepository(User::class)->findOneBy([]);
-        
-        if (!$user) {
-            $this->addFlash('error', 'Aucun utilisateur trouvé. Créez un utilisateur d\'abord.');
-            return $this->redirectToRoute('partie_index');
-        }
+        // Utiliser l'utilisateur connecté
+        $user = $this->getUser();
 
         // Créer un HandLevel par défaut avec tous les niveaux à 0
         $handLevel = new HandLevel();
@@ -83,6 +79,11 @@ class PartieController extends AbstractController
     #[Route('/{id}', name: 'partie_show', requirements: ['id' => '\d+'])]
     public function show(Partie $partie, Request $request, EntityManagerInterface $em): Response
     {
+        // Vérifier que la partie appartient à l'utilisateur connecté
+        if ($partie->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez pas accéder à cette partie.');
+        }
+        
         // Traiter l'ajout manuel d'un joker
         if ($request->isMethod('POST') && $request->request->has('joker_instance')) {
             $data = $request->request->all('joker_instance');
@@ -282,5 +283,73 @@ class PartieController extends AbstractController
         }
         
         return $this->json($data);
+    }
+
+    /**
+     * Toggle l'observatoire
+     */
+    #[Route('/{id}/toggle-observatoire', name: 'partie_toggle_observatoire', methods: ['POST'])]
+    public function toggleObservatoire(Partie $partie, Request $request, EntityManagerInterface $em): Response
+    {
+        if (!$this->isCsrfTokenValid('toggle_observatoire_' . $partie->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('partie_show', ['id' => $partie->getId()]);
+        }
+
+        $partie->setObservatoireActif(!$partie->isObservatoireActif());
+        $em->flush();
+
+        $status = $partie->isObservatoireActif() ? 'activé' : 'désactivé';
+        $this->addFlash('success', "L'observatoire a été {$status}.");
+        
+        return $this->redirectToRoute('partie_show', ['id' => $partie->getId()]);
+    }
+
+    /**
+     * Modifier le compteurStack d'un joker
+     */
+    #[Route('/{partieId}/joker/{jokerId}/stack/{amount}', name: 'partie_joker_stack_update', methods: ['POST'])]
+    public function updateJokerStack(
+        int $partieId,
+        int $jokerId,
+        int $amount,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response {
+        $partie = $em->getRepository(Partie::class)->find($partieId);
+        
+        if (!$partie) {
+            throw $this->createNotFoundException('Partie non trouvée');
+        }
+
+        // Trouver le joker dans la partie
+        $jokerInstance = null;
+        foreach ($partie->getJokers() as $joker) {
+            if ($joker->getId() === $jokerId) {
+                $jokerInstance = $joker;
+                break;
+            }
+        }
+
+        if (!$jokerInstance) {
+            $this->addFlash('error', 'Joker non trouvé dans cette partie.');
+            return $this->redirectToRoute('partie_show', ['id' => $partieId]);
+        }
+
+        // Vérifier le token CSRF
+        if (!$this->isCsrfTokenValid('joker_stack_update_' . $jokerId, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('partie_show', ['id' => $partieId]);
+        }
+
+        // Mettre à jour le stack (minimum 0)
+        $newStack = max(0, $jokerInstance->getCompteurStack() + $amount);
+        $jokerInstance->setCompteurStack($newStack);
+        
+        $em->flush();
+
+        $this->addFlash('success', "Stack de {$jokerInstance->getJokerTemplate()->getNom()} mis à jour : {$newStack}");
+
+        return $this->redirectToRoute('partie_show', ['id' => $partieId]);
     }
 }

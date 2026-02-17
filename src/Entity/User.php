@@ -5,11 +5,13 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'user')]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -94,5 +96,36 @@ class User
             }
         }
         return $this;
+    }
+
+    /**
+     * Méthodes requises par UserInterface
+     */
+    
+    /**
+     * Identifiant unique de l'utilisateur (username dans notre cas)
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->username;
+    }
+
+    /**
+     * Retourne les rôles de l'utilisateur
+     * Par défaut, tout le monde a ROLE_USER
+     */
+    public function getRoles(): array
+    {
+        // Garantir que chaque utilisateur a au moins ROLE_USER
+        return ['ROLE_USER'];
+    }
+
+    /**
+     * Efface les données sensibles temporaires (comme le plainPassword)
+     */
+    public function eraseCredentials(): void
+    {
+        // Si vous stockez temporairement un plainPassword, effacez-le ici
+        // $this->plainPassword = null;
     }
 }

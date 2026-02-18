@@ -179,6 +179,13 @@ class ConsommableController extends AbstractController
                 $this->addFlash('success', "$count consommable(s) - statut modifié.");
                 break;
 
+            case 'reset':
+                foreach ($consommables as $consommable) {
+                    $consommable->setStatus(ConsommableStatus::BASE);
+                }
+                $this->addFlash('success', "$count consommable(s) réinitialisé(s) à l'état de base.");
+                break;
+
             case 'duplicate':
                 $duplicateCount = (int) $request->request->get('duplicate_count', 1);
                 if ($duplicateCount < 1 || $duplicateCount > 10) {

@@ -233,9 +233,29 @@
                     </div>
                 {% endif %}
                 
+                {# Boutons de réorganisation #}
+                <div style="display: flex; gap: 5px; margin-top: 10px;">
+                    <form method="post" action="{{ path('partie_joker_move', {partieId: partie.id, jokerId: jokerInstance.id, direction: 'left'}) }}" style="flex: 1;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('joker_move_' ~ jokerInstance.id) }}">
+                        <button type="submit" 
+                                style="width: 100%; padding: 8px; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;"
+                                {% if loop.first %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
+                            ← Gauche
+                        </button>
+                    </form>
+                    <form method="post" action="{{ path('partie_joker_move', {partieId: partie.id, jokerId: jokerInstance.id, direction: 'right'}) }}" style="flex: 1;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('joker_move_' ~ jokerInstance.id) }}">
+                        <button type="submit" 
+                                style="width: 100%; padding: 8px; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;"
+                                {% if loop.last %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
+                            Droite →
+                        </button>
+                    </form>
+                </div>
+                
                 <a href="{{ path('partie_joker_delete', {'partieId': partie.id, 'jokerId': jokerInstance.id}) }}" 
                    onclick="return confirm('Retirer ce joker de la partie ?');"
-                   style="display: block; text-align: center; padding: 8px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 5px; margin-top: 10px;">
+                   style="display: block; text-align: center; padding: 8px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 5px; margin-top: 5px;">
                     Retirer
                 </a>
             </div>

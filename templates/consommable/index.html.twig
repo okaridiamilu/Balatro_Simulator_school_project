@@ -219,45 +219,57 @@
     z-index: 1000;
 ">
     <div style="max-width: 1200px; margin: 0 auto;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-            <div>
-                <strong id="selected-count">0</strong> consommable(s) sélectionné(s)
+        <div style="margin-bottom: 15px;">
+            <strong id="selected-count">0</strong> consommable(s) sélectionné(s)
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            {# Partie gauche - Options de modification #}
+            <div style="border-right: 1px solid #6c757d; padding-right: 20px;">
+                <h4 style="margin: 0 0 15px 0; font-size: 1em; color: #adb5bd;">Options de modification</h4>
+                
+                {# Changer le statut #}
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                    <select id="bulk-status" style="flex: 1; padding: 10px; border-radius: 5px; border: none;">
+                        <option value="">-- Changer statut --</option>
+                        <option value="base">Base</option>
+                        <option value="negative">Négatif</option>
+                    </select>
+                    <button onclick="bulkAction('change_status')" 
+                            style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; white-space: nowrap;">
+                        Appliquer
+                    </button>
+                </div>
             </div>
             
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                {# Supprimer #}
-                <button onclick="bulkAction('delete')" 
-                        style="background-color: #dc3545; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                    Supprimer
-                </button>
+            {# Partie droite - Actions de sélection #}
+            <div>
+                <h4 style="margin: 0 0 15px 0; font-size: 1em; color: #adb5bd;">Actions de sélection</h4>
                 
-                {# Modifier le statut #}
-                <select id="bulk-status" style="padding: 10px; border-radius: 5px; border: none;">
-                    <option value="">-- Changer statut --</option>
-                    <option value="base">Base</option>
-                    <option value="negative">Négatif</option>
-                </select>
-                <button onclick="bulkAction('change_status')" 
-                        style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                    Appliquer statut
+                {# Réinitialiser #}
+                <button onclick="bulkAction('reset')" 
+                        style="background-color: #ffc107; color: #000; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-bottom: 10px;">
+                    Réinitialiser
                 </button>
                 
                 {# Dupliquer #}
-                <input type="number" 
-                       id="duplicate-count" 
-                       value="1" 
-                       min="1" 
-                       max="10" 
-                       style="width: 60px; padding: 10px; border-radius: 5px; border: none; text-align: center;">
-                <button onclick="bulkAction('duplicate')" 
-                        style="background-color: #17a2b8; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                    Dupliquer ×
-                </button>
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                    <button onclick="bulkAction('duplicate')" 
+                            style="flex: 1; background-color: #17a2b8; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                        Dupliquer
+                    </button>
+                    <input type="number" 
+                           id="duplicate-count" 
+                           value="1" 
+                           min="1" 
+                           max="10" 
+                           style="width: 70px; padding: 10px; border-radius: 5px; border: none; text-align: center;">
+                </div>
                 
-                {# Désélectionner tout #}
-                <button onclick="deselectAll()" 
-                        style="background-color: #6c757d; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                    Désélectionner
+                {# Supprimer #}
+                <button onclick="bulkAction('delete')" 
+                        style="background-color: #dc3545; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; width: 100%;">
+                    Supprimer
                 </button>
             </div>
         </div>

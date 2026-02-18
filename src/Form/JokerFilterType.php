@@ -37,6 +37,18 @@ class JokerFilterType extends AbstractType
                 'choices' => $raretes,
                 'required' => false,
                 'attr' => ['class' => 'form-control']
+            ])
+            ->add('tri', ChoiceType::class, [
+                'label' => 'Trier par',
+                'choices' => [
+                    'Ordre par défaut' => '',
+                    'Nom (A-Z)' => 'nom_asc',
+                    'Nom (Z-A)' => 'nom_desc',
+                    'Rareté (croissante)' => 'rarete_asc',
+                    'Rareté (décroissante)' => 'rarete_desc',
+                ],
+                'required' => false,
+                'attr' => ['class' => 'form-control']
             ]);
     }
 

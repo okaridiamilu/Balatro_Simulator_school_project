@@ -173,6 +173,79 @@ class PartieController extends AbstractController
     }
 
     /**
+     * Déplacer un joker à gauche ou à droite
+     */
+    #[Route('/{partieId}/joker/{jokerId}/move/{direction}', name: 'partie_joker_move', methods: ['POST'])]
+    public function moveJoker(
+        int $partieId,
+        int $jokerId,
+        string $direction,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response {
+        // Vérification CSRF
+        $token = $request->request->get('_token');
+        if (!$this->isCsrfTokenValid('joker_move_' . $jokerId, $token)) {
+            $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('partie_show', ['id' => $partieId]);
+        }
+
+        // Vérifier que le joker existe et appartient à cette partie
+        $jokerInstance = $em->getRepository(JokerInstance::class)->find($jokerId);
+        
+        if (!$jokerInstance || $jokerInstance->getPartie()->getId() !== $partieId) {
+            $this->addFlash('error', 'Joker non trouvé.');
+            return $this->redirectToRoute('partie_show', ['id' => $partieId]);
+        }
+
+        $partie = $jokerInstance->getPartie();
+        $currentOrdre = $jokerInstance->getOrdre();
+
+        // Trouver le joker adjacent
+        $repository = $em->getRepository(JokerInstance::class);
+        
+        if ($direction === 'left') {
+            // Trouver le joker avec le plus grand ordre inférieur au courant
+            $adjacentJoker = $repository->createQueryBuilder('j')
+                ->where('j.partie = :partie')
+                ->andWhere('j.ordre < :ordre')
+                ->setParameter('partie', $partie)
+                ->setParameter('ordre', $currentOrdre)
+                ->orderBy('j.ordre', 'DESC')
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getOneOrNullResult();
+        } else {
+            // Trouver le joker avec le plus petit ordre supérieur au courant
+            $adjacentJoker = $repository->createQueryBuilder('j')
+                ->where('j.partie = :partie')
+                ->andWhere('j.ordre > :ordre')
+                ->setParameter('partie', $partie)
+                ->setParameter('ordre', $currentOrdre)
+                ->orderBy('j.ordre', 'ASC')
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getOneOrNullResult();
+        }
+
+        if (!$adjacentJoker) {
+            $this->addFlash('error', 'Impossible de déplacer le joker dans cette direction.');
+            return $this->redirectToRoute('partie_show', ['id' => $partieId]);
+        }
+
+        // Échanger les valeurs d'ordre
+        $adjacentOrdre = $adjacentJoker->getOrdre();
+        $jokerInstance->setOrdre($adjacentOrdre);
+        $adjacentJoker->setOrdre($currentOrdre);
+
+        $em->flush();
+
+        $this->addFlash('success', 'Joker déplacé.');
+
+        return $this->redirectToRoute('partie_show', ['id' => $partieId]);
+    }
+
+    /**
      * Supprimer une partie
      */
     #[Route('/{id}/delete', name: 'partie_delete', methods: ['POST'])]

@@ -42,7 +42,8 @@ class HomeController extends AbstractController
             return $jokers;
         }
         
-        return array_filter($jokers, function(JokerTemplate $joker) use ($filters) {
+        // Filtrage
+        $filtered = array_filter($jokers, function(JokerTemplate $joker) use ($filters) {
             // Filtre par nom
             if (!empty($filters['nom'])) {
                 $searchTerm = strtolower($filters['nom']);
@@ -61,6 +62,30 @@ class HomeController extends AbstractController
             
             return true;
         });
+        
+        // Tri
+        if (!empty($filters['tri'])) {
+            $filtered = array_values($filtered); // Réindexer
+            
+            switch ($filters['tri']) {
+                case 'nom_asc':
+                    usort($filtered, fn($a, $b) => strcasecmp($a->getNom(), $b->getNom()));
+                    break;
+                case 'nom_desc':
+                    usort($filtered, fn($a, $b) => strcasecmp($b->getNom(), $a->getNom()));
+                    break;
+                case 'rarete_asc':
+                    $order = ['commun' => 1, 'uncommun' => 2, 'rare' => 3, 'legendary' => 4];
+                    usort($filtered, fn($a, $b) => ($order[$a->getRarete()->value] ?? 0) <=> ($order[$b->getRarete()->value] ?? 0));
+                    break;
+                case 'rarete_desc':
+                    $order = ['legendary' => 1, 'rare' => 2, 'uncommun' => 3, 'commun' => 4];
+                    usort($filtered, fn($a, $b) => ($order[$a->getRarete()->value] ?? 0) <=> ($order[$b->getRarete()->value] ?? 0));
+                    break;
+            }
+        }
+        
+        return $filtered;
     }
 
     #[Route("/joker/new", name:"joker_new")]

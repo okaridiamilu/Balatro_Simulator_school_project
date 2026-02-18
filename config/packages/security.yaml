@@ -45,6 +45,7 @@ security:
         - { path: ^/$, roles: PUBLIC_ACCESS }           # Page d'accueil accessible à tous
         - { path: ^/login, roles: PUBLIC_ACCESS }       # Page de connexion accessible à tous
         - { path: ^/register, roles: PUBLIC_ACCESS }    # Page d'inscription accessible à tous
+        - { path: ^/_error, roles: PUBLIC_ACCESS }      # Pages d'erreur accessibles à tous
         - { path: ^/, roles: ROLE_USER }                # Tout le reste nécessite d'être connecté
 
 when@test:

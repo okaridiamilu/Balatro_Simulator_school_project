@@ -16,12 +16,6 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class HomeController extends AbstractController
 {
-    #[Route("/", name:"base")]
-    public function base(): Response 
-    {
-        return $this->render("base.html.twig");
-    }
-    
     #[Route("/about", name:"about")]
     public function about(Request $request, EntityManagerInterface $em): Response
     {

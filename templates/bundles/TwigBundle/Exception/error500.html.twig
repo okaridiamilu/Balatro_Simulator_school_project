@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur serveur - 500{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="error-template">
+                <h1 class="display-1 text-warning">500</h1>
+                <h2 class="mb-4">Erreur serveur</h2>
+                <div class="error-details mb-4">
+                    <p class="lead">Oups ! Une erreur s'est produite sur le serveur.</p>
+                    <p class="text-muted">C'était pas prévue? Allo le serveur? we got a problem.</p>
+                </div>
+                <div class="error-actions">
+                    <a href="{{ path('app_home') }}" class="btn btn-primary btn-lg me-2">
+                        <i class="bi bi-house"></i> Retour à l'accueil
+                    </a>
+                    <button onclick="window.location.reload();" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-arrow-clockwise"></i> Réessayer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

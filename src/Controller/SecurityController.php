@@ -14,16 +14,11 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class SecurityController extends AbstractController
 {
     /**
-     * Page d'accueil (accessible sans connexion)
+     * Page d'accueil (accessible à tous, connecté ou non)
      */
     #[Route('/', name: 'app_home')]
     public function home(): Response
     {
-        // Si l'utilisateur est déjà connecté, rediriger vers les parties
-        if ($this->getUser()) {
-            return $this->redirectToRoute('partie_index');
-        }
-
         return $this->render('security/home.html.twig');
     }
 

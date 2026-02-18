@@ -1,0 +1,161 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Importer une partie - BALATRO SIMULATOR{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Importer une partie</h1>
+        <a href="{{ path('partie_index') }}" class="btn btn-secondary">Retour aux parties</a>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('warning') %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-4">Sélectionnez un fichier JSON</h5>
+                    
+                    <form method="post" enctype="multipart/form-data" id="importForm">
+                        <div class="mb-4">
+                            <label for="json_file" class="form-label">Fichier JSON de la partie</label>
+                            <input type="file" 
+                                   class="form-control" 
+                                   id="json_file" 
+                                   name="json_file" 
+                                   accept=".json,application/json"
+                                   required>
+                            <div class="form-text">
+                                Sélectionnez un fichier JSON exporté depuis une partie existante.
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Importer la partie
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="alert alert-info mb-0">
+                        <h6 class="alert-heading">Format du fichier JSON</h6>
+                        <p class="mb-2">Le fichier JSON doit contenir les sections suivantes :</p>
+                        <ul class="mb-0">
+                            <li><strong>partie</strong> : informations de base (identifiant, argent, main, défausse, etc.)</li>
+                            <li><strong>jokers</strong> : liste des jokers avec leur template, état, ordre et compteur</li>
+                            <li><strong>cartes</strong> : liste des cartes du deck (number, color, status, seal, matter)</li>
+                            <li><strong>consommables</strong> : liste des consommables (tarots, planètes, spectres)</li>
+                            <li><strong>handLevel</strong> : niveaux des mains de poker</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow mt-4">
+                <div class="card-body">
+                    <h6 class="card-title">Exemple de structure JSON</h6>
+                    <pre class="bg-light p-3 rounded" style="font-size: 0.85em; max-height: 400px; overflow-y: auto;"><code>{
+  "partie": {
+    "identifiant": "Ma partie",
+    "money": 100,
+    "hand": 8,
+    "discard": 3,
+    "totalJokerSlots": 5,
+    "observatoireActif": false
+  },
+  "jokers": [
+    {
+      "templateId": 1,
+      "etat": "foil",
+      "ordre": 1,
+      "compteurStack": 5
+    }
+  ],
+  "cartes": [
+    {
+      "number": "ace",
+      "color": "hearts",
+      "status": "foil",
+      "seal": "gold",
+      "matter": "bonus"
+    }
+  ],
+  "consommables": [
+    {
+      "name": "The Fool",
+      "description": "Creates the last Tarot...",
+      "category": "tarot",
+      "type": "enhancer",
+      "status": "base"
+    }
+  ],
+  "handLevel": {
+    "highCard": 1,
+    "pair": 2,
+    "twoPair": 1,
+    "threeOfAKind": 3,
+    "straight": 0,
+    "flush": 1,
+    "fullHouse": 0,
+    "fourOfAKind": 0,
+    "straightFlush": 0,
+    "royalFlush": 0
+  }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Afficher le nom du fichier sélectionné
+document.getElementById('json_file').addEventListener('change', function(e) {
+    const fileName = e.target.files[0]?.name;
+    if (fileName) {
+        const label = document.querySelector('label[for="json_file"]');
+        label.textContent = 'Fichier sélectionné : ' + fileName;
+    }
+});
+
+// Validation basique avant soumission
+document.getElementById('importForm').addEventListener('submit', function(e) {
+    const fileInput = document.getElementById('json_file');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        e.preventDefault();
+        alert('Veuillez sélectionner un fichier.');
+        return;
+    }
+    
+    if (!file.name.endsWith('.json')) {
+        e.preventDefault();
+        alert('Le fichier doit être au format JSON.');
+        return;
+    }
+});
+</script>
+{% endblock %}

@@ -11,7 +11,7 @@
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
     <h1 style="margin: 0;">{{ partie.identifiant }}</h1>
-    <div style="display: flex; gap: 10px;">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
         <a href="{{ path('partie_cartes_index', {'partieId': partie.id}) }}" 
            style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
             Deck ({{ partie.cartes|length }})
@@ -23,6 +23,10 @@
         <a href="{{ path('hand_levels_index', {'partieId': partie.id}) }}" 
            style="background-color: #17a2b8; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
             Hand Levels
+        </a>
+        <a href="{{ path('partie_export', {'id': partie.id}) }}" 
+           style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            Exporter (JSON)
         </a>
     </div>
 </div>

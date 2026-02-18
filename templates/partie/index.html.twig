@@ -18,10 +18,15 @@
     </div>
 {% endfor %}
 
-<div style="margin: 20px 0;">
+<div style="margin: 20px 0; display: flex; gap: 15px; flex-wrap: wrap;">
     <a href="{{ path('partie_new') }}" 
        style="background-color: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
         Créer une nouvelle partie
+    </a>
+    
+    <a href="{{ path('partie_import') }}" 
+       style="background-color: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+        Importer une partie (JSON)
     </a>
 </div>
 

@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+// Consommable = tarot, planète ou spectre (objets utilisables une fois)
 #[ORM\Entity]
 #[ORM\Table(name: 'consommable')]
 class Consommable
@@ -46,9 +47,7 @@ class Consommable
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $image = null;
 
-    /**
-     * @var Collection<int, Partie>
-     */
+    // Les parties qui ont ce consommable (un consommable peut être dans plusieurs parties)
     #[ORM\ManyToMany(targetEntity: Partie::class, mappedBy: 'consommables')]
     private Collection $parties;
 

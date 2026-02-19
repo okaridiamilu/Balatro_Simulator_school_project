@@ -6,10 +6,8 @@ use App\Enum\EtatJoker;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * JokerInstance représente une instance spécifique d'un joker dans une partie.
- * Elle contient l'état et le compteur de stack pour ce joker précis.
- */
+// JokerInstance = une instance spécifique d'un joker dans UNE partie (avec son état, sa position, son compteur)
+// C'est le joker "vivant" dans une partie, alors que JokerTemplate est juste le modèle
 #[ORM\Entity]
 #[ORM\Table(name: 'joker_instance')]
 class JokerInstance
@@ -19,40 +17,28 @@ class JokerInstance
     #[ORM\Column]
     private ?int $id = null;
 
-    /**
-     * Référence vers le template (modèle) de ce joker
-     */
+    // Le modèle (template) de ce joker (quel type de joker c'est : Vampire, Baron, etc.)
     #[ORM\ManyToOne(targetEntity: JokerTemplate::class, inversedBy: 'instances')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: "Le template de joker est obligatoire")]
     private ?JokerTemplate $jokerTemplate = null;
 
-    /**
-     * Référence vers la partie à laquelle appartient ce joker
-     */
+    // La partie dans laquelle se trouve ce joker
     #[ORM\ManyToOne(targetEntity: Partie::class, inversedBy: 'jokers')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: "La partie est obligatoire")]
     private ?Partie $partie = null;
 
-    /**
-     * État du joker (foil, holographique, polychrome, négatif)
-     * Peut être null si le joker est dans son état normal
-     */
+    // État spécial du joker : foil, holographique, polychrome, négatif (null = état normal)
     #[ORM\Column(type: 'string', enumType: EtatJoker::class, nullable: true)]
     private ?EtatJoker $etat = null;
 
-    /**
-     * Position du joker dans la rangée (1 à 5 normalement)
-     */
+    // Position du joker dans la rangée (1 = premier slot, 2 = deuxième slot, etc.)
     #[Assert\Positive(message: "L'ordre doit être positif")]
     #[ORM\Column(type: 'integer')]
     private int $ordre = 1;
 
-    /**
-     * Compteur de stack pour ce joker
-     * Exemple: Vampire avec compteur à 10 = 10 stacks
-     */
+    // Compteur de stack pour ce joker spécifique (ex: Vampire avec 10 stacks = +150 chips)
     #[Assert\PositiveOrZero(message: "Le compteur de stack doit être positif ou zéro")]
     #[ORM\Column(type: 'integer')]
     private int $compteurStack = 0;

@@ -13,30 +13,26 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    /**
-     * Page d'accueil (accessible à tous, connecté ou non)
-     */
+    // Page d'accueil publique (accessible même sans être connecté)
     #[Route('/', name: 'app_home')]
     public function home(): Response
     {
         return $this->render('security/home.html.twig');
     }
 
-    /**
-     * Page de connexion
-     */
+    // Formulaire de connexion
     #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // Si l'utilisateur est déjà connecté, rediriger vers les parties
+        // Si on est déjà connecté, on va direct aux parties (pas besoin de se reconnecter !)
         if ($this->getUser()) {
             return $this->redirectToRoute('partie_index');
         }
 
-        // Récupérer l'erreur de connexion s'il y en a une
+        // Récupérer l'erreur de connexion pour l'afficher (si mauvais mot de passe par exemple)
         $error = $authenticationUtils->getLastAuthenticationError();
 
-        // Dernier username saisi par l'utilisateur
+        // Garder le dernier nom d'utilisateur saisi (pour pas avoir à le retaper)
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('security/login.html.twig', [
@@ -45,26 +41,22 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    /**
-     * Déconnexion (géré automatiquement par Symfony)
-     */
+    // Déconnexion (gérée automatiquement par Symfony, pas besoin de coder)
     #[Route('/logout', name: 'app_logout')]
     public function logout(): void
     {
-        // Cette méthode peut rester vide, elle sera interceptée par le firewall
+        // Cette fonction ne sera jamais exécutée car le firewall intercepte avant
         throw new \LogicException('Cette méthode peut être vide car elle sera interceptée par la clé logout de votre firewall.');
     }
 
-    /**
-     * Page d'inscription
-     */
+    // Formulaire d'inscription pour créer un nouveau compte
     #[Route('/register', name: 'app_register')]
     public function register(
         Request $request, 
         UserPasswordHasherInterface $passwordHasher, 
         EntityManagerInterface $em
     ): Response {
-        // Si l'utilisateur est déjà connecté, rediriger vers les parties
+        // Si on est déjà connecté, on va direct aux parties (pas besoin de s'inscrire deux fois !)
         if ($this->getUser()) {
             return $this->redirectToRoute('partie_index');
         }
@@ -74,7 +66,7 @@ class SecurityController extends AbstractController
             $password = $request->request->get('password');
             $passwordConfirm = $request->request->get('password_confirm');
 
-            // Validation basique
+            // Validations simples avant de créer le compte
             $errors = [];
 
             if (empty($username) || strlen($username) < 3) {
@@ -89,18 +81,18 @@ class SecurityController extends AbstractController
                 $errors[] = "Les mots de passe ne correspondent pas.";
             }
 
-            // Vérifier si l'utilisateur existe déjà
+            // Vérifier si quelqu'un d'autre utilise déjà ce nom
             $existingUser = $em->getRepository(User::class)->findOneBy(['username' => $username]);
             if ($existingUser) {
                 $errors[] = "Ce nom d'utilisateur est déjà pris.";
             }
 
             if (empty($errors)) {
-                // Créer le nouvel utilisateur
+                // Tout est OK, on crée le compte
                 $user = new User();
                 $user->setUsername($username);
                 
-                // Hasher le mot de passe
+                // Hasher le mot de passe (on ne stocke JAMAIS les mots de passe en clair ! On est pas des hommes des cavernes)
                 $hashedPassword = $passwordHasher->hashPassword($user, $password);
                 $user->setPassword($hashedPassword);
 

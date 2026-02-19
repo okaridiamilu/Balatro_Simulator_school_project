@@ -16,9 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/partie/{partieId}/consommables')]
 class ConsommableController extends AbstractController
 {
-    /**
-     * Afficher les consommables d'une partie
-     */
+    //Afficher les consommables d'une partie (tarots, planètes, spectres)
     #[Route('/', name: 'partie_consommables_index')]
     public function index(int $partieId, EntityManagerInterface $em): Response
     {
@@ -29,14 +27,12 @@ class ConsommableController extends AbstractController
             return $this->redirectToRoute('partie_index');
         }
         
-        return $this->render('consommable/index.html.twig', [
+        return $this->render('consommable/manage.html.twig', [
             'partie' => $partie,
         ]);
     }
 
-    /**
-     * Ajouter un consommable
-     */
+    //Ajouter un consommable à la partie
     #[Route('/add', name: 'partie_consommables_add', methods: ['POST'])]
     public function add(int $partieId, Request $request, EntityManagerInterface $em): Response
     {
@@ -47,7 +43,7 @@ class ConsommableController extends AbstractController
             return $this->redirectToRoute('partie_index');
         }
 
-        // Vérifier le token CSRF
+        // Vérifier le token CSRF (deja expliqué dans les autres controllers, même principe ici)
         if (!$this->isCsrfTokenValid('consommable_add', $request->request->get('_token'))) {
             $this->addFlash('error', 'Token CSRF invalide.');
             return $this->redirectToRoute('partie_consommables_index', ['partieId' => $partieId]);
@@ -56,7 +52,7 @@ class ConsommableController extends AbstractController
         $type = ConsommableType::from($request->request->get('type'));
         $category = ConsommableCategory::from($request->request->get('category'));
         
-        // Générer automatiquement le nom et la description basés sur le type
+        // On récupère automatiquement le nom et la description selon le type choisi (genre "The Fool" pour un tarot)
         $namesAndDescriptions = $this->getConsommableData();
         $typeValue = $type->value;
         
@@ -80,9 +76,7 @@ class ConsommableController extends AbstractController
         return $this->redirectToRoute('partie_consommables_index', ['partieId' => $partieId]);
     }
 
-    /**
-     * Retirer un consommable
-     */
+    //Retirer un consommable de la partie
     #[Route('/{consommableId}/remove', name: 'partie_consommables_remove', methods: ['POST'])]
     public function remove(int $partieId, int $consommableId, EntityManagerInterface $em): Response
     {
@@ -102,9 +96,7 @@ class ConsommableController extends AbstractController
         return $this->redirectToRoute('partie_consommables_index', ['partieId' => $partieId]);
     }
 
-    /**
-     * Vider tous les consommables
-     */
+    //Supprimer tous les consommables d'un coup
     #[Route('/clear', name: 'partie_consommables_clear', methods: ['POST'])]
     public function clear(int $partieId, Request $request, EntityManagerInterface $em): Response
     {
@@ -133,9 +125,7 @@ class ConsommableController extends AbstractController
         return $this->redirectToRoute('partie_consommables_index', ['partieId' => $partieId]);
     }
 
-    /**
-     * Actions groupées sur plusieurs consommables
-     */
+    //Fonction pour modifier plusieurs consommables en même temps (quand on sélectionne plusieurs dans l'interface)
     #[Route('/bulk-action', name: 'partie_consommables_bulk_action', methods: ['POST'])]
     public function bulkAction(int $partieId, Request $request, EntityManagerInterface $em): Response
     {
@@ -146,7 +136,6 @@ class ConsommableController extends AbstractController
             return $this->redirectToRoute('partie_index');
         }
 
-        // Vérifier le token CSRF
         if (!$this->isCsrfTokenValid('bulk_action_consommables', $request->request->get('_token'))) {
             $this->addFlash('error', 'Token CSRF invalide.');
             return $this->redirectToRoute('partie_consommables_index', ['partieId' => $partieId]);
@@ -163,6 +152,7 @@ class ConsommableController extends AbstractController
         $consommables = $em->getRepository(Consommable::class)->findBy(['id' => $consommableIds]);
         $count = count($consommables);
 
+        // Selon l'action demandée, on applique le changement sur tous les consommables sélectionnés
         switch ($action) {
             case 'delete':
                 foreach ($consommables as $consommable) {
@@ -180,6 +170,7 @@ class ConsommableController extends AbstractController
                 break;
 
             case 'reset':
+                // Remettre tous les consommables à l'état "base" (pas négatif)
                 foreach ($consommables as $consommable) {
                     $consommable->setStatus(ConsommableStatus::BASE);
                 }
@@ -193,6 +184,7 @@ class ConsommableController extends AbstractController
                     return $this->redirectToRoute('partie_consommables_index', ['partieId' => $partieId]);
                 }
                 
+                // Pour chaque consommable sélectionné, on en crée X copies identiques
                 $totalCreated = 0;
                 foreach ($consommables as $consommable) {
                     for ($i = 0; $i < $duplicateCount; $i++) {
@@ -221,6 +213,9 @@ class ConsommableController extends AbstractController
         return $this->redirectToRoute('partie_consommables_index', ['partieId' => $partieId]);
     }
 
+    // Grosse fonction qui contient tous les noms et descriptions des consommables du jeu Balatro
+    // (comme ça on n'a pas besoin de les taper à chaque fois, on les récupère automatiquement)
+    // Si jamais on veut en ajouter/modifier, c'est ici qu'il faut faire le changement. pour l'instant c'est un peu "hardcodé" mais ça fait le taf pour le moment
     private function getConsommableData(): array
     {
         return [
@@ -284,3 +279,5 @@ class ConsommableController extends AbstractController
         ];
     }
 }
+//oui c'est moche. je sais. mais ça évite d'avoir à faire 30 cases dans un switch à chaque fois qu'on veut récupérer le nom et la description d'un consommable, et ça centralise toutes les données au même endroit, donc c'est plus facile à maintenir que de les éparpiller un peu partout dans le code.
+// J'aurais pu faire plus beau, mais je ne suis pas game dev. ça marche, l'utilisateur ne le voit pas, voila voila. (Coucou Chris d'ailleur si tu vois ce message, j'espère?)

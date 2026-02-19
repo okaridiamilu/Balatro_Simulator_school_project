@@ -12,15 +12,13 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/partie/{partieId}/hand-levels')]
 class HandLevelController extends AbstractController
 {
-    /**
-     * Configuration de base des mains (chips, mult) et leurs augmentations par niveau
-     */
+    // Configuration de toutes les mains (high card, pair, brelan, etc.) avec leurs chips/mult de base et combien ils augmentent par niveau
     private function getHandsConfig(): array
     {
         return [
             'highCard' => [
                 'name' => 'High Card',
-                'icon' => '🃏',
+                'icon' => '[HC]',
                 'baseChips' => 5,
                 'baseMult' => 1,
                 'chipsPerLevel' => 10,
@@ -28,7 +26,7 @@ class HandLevelController extends AbstractController
             ],
             'pair' => [
                 'name' => 'Pair',
-                'icon' => '👫',
+                'icon' => '[PR]',
                 'baseChips' => 10,
                 'baseMult' => 2,
                 'chipsPerLevel' => 15,
@@ -36,7 +34,7 @@ class HandLevelController extends AbstractController
             ],
             'twoPair' => [
                 'name' => 'Two Pair',
-                'icon' => '👥',
+                'icon' => '[2P]',
                 'baseChips' => 20,
                 'baseMult' => 2,
                 'chipsPerLevel' => 20,
@@ -44,7 +42,7 @@ class HandLevelController extends AbstractController
             ],
             'threeOfAKind' => [
                 'name' => 'Three of a Kind',
-                'icon' => '🎯',
+                'icon' => '[3K]',
                 'baseChips' => 30,
                 'baseMult' => 3,
                 'chipsPerLevel' => 20,
@@ -52,7 +50,7 @@ class HandLevelController extends AbstractController
             ],
             'straight' => [
                 'name' => 'Straight',
-                'icon' => '📏',
+                'icon' => '[ST]',
                 'baseChips' => 30,
                 'baseMult' => 4,
                 'chipsPerLevel' => 30,
@@ -60,7 +58,7 @@ class HandLevelController extends AbstractController
             ],
             'flush' => [
                 'name' => 'Flush',
-                'icon' => '🌊',
+                'icon' => '[FL]',
                 'baseChips' => 35,
                 'baseMult' => 4,
                 'chipsPerLevel' => 15,
@@ -68,7 +66,7 @@ class HandLevelController extends AbstractController
             ],
             'fullHouse' => [
                 'name' => 'Full House',
-                'icon' => '🏠',
+                'icon' => '[FH]',
                 'baseChips' => 40,
                 'baseMult' => 4,
                 'chipsPerLevel' => 25,
@@ -76,7 +74,7 @@ class HandLevelController extends AbstractController
             ],
             'fourOfAKind' => [
                 'name' => 'Four of a Kind',
-                'icon' => '💎',
+                'icon' => '[4K]',
                 'baseChips' => 60,
                 'baseMult' => 7,
                 'chipsPerLevel' => 30,
@@ -84,7 +82,7 @@ class HandLevelController extends AbstractController
             ],
             'straightFlush' => [
                 'name' => 'Straight Flush',
-                'icon' => '🔥',
+                'icon' => '[SF]',
                 'baseChips' => 100,
                 'baseMult' => 8,
                 'chipsPerLevel' => 40,
@@ -92,7 +90,7 @@ class HandLevelController extends AbstractController
             ],
             'royalFlush' => [
                 'name' => 'Royal Flush',
-                'icon' => '👑',
+                'icon' => '[RF]',
                 'baseChips' => 100,
                 'baseMult' => 8,
                 'chipsPerLevel' => 40,
@@ -101,9 +99,7 @@ class HandLevelController extends AbstractController
         ];
     }
 
-    /**
-     * Calculer les chips et mult pour un niveau donné d'une main
-     */
+    // Calculer les chips et mult d'une main selon son niveau actuel (baseChips + niveau * chipsPerLevel)
     private function calculateHandStats(string $handKey, int $level): array
     {
         $config = $this->getHandsConfig()[$handKey];
@@ -114,9 +110,7 @@ class HandLevelController extends AbstractController
         ];
     }
 
-    /**
-     * Afficher les niveaux des mains
-     */
+    // Afficher la page avec tous les niveaux de mains de la partie
     #[Route('', name: 'hand_levels_index')]
     public function index(int $partieId, EntityManagerInterface $em): Response
     {
@@ -129,7 +123,7 @@ class HandLevelController extends AbstractController
         $handLevel = $partie->getHandLevel();
         $handsConfig = $this->getHandsConfig();
         
-        // Préparer les données pour chaque main
+        // Préparer les données pour chaque main (avec son niveau actuel, ses chips et mult)
         $handsData = [];
         foreach ($handsConfig as $key => $config) {
             $getter = 'get' . ucfirst($key);
@@ -144,15 +138,13 @@ class HandLevelController extends AbstractController
             ];
         }
 
-        return $this->render('hand_level/index.html.twig', [
+        return $this->render('hand_level/levels.html.twig', [
             'partie' => $partie,
             'handsData' => $handsData,
         ]);
     }
 
-    /**
-     * Mettre à jour le niveau d'une main
-     */
+    // Augmenter ou diminuer le niveau d'une main spécifique (+1 ou -1 selon le bouton cliqué)
     #[Route('/{handType}/update/{amount}', name: 'hand_level_update', methods: ['POST'])]
     public function updateLevel(
         int $partieId,
@@ -167,7 +159,7 @@ class HandLevelController extends AbstractController
             throw $this->createNotFoundException('Partie non trouvée');
         }
 
-        // Vérifier le token CSRF
+        // Vérifier le token CSRF (sécurité contre les attaques)
         if (!$this->isCsrfTokenValid('hand_level_update', $request->request->get('_token'))) {
             $this->addFlash('error', 'Token CSRF invalide.');
             return $this->redirectToRoute('hand_levels_index', ['partieId' => $partieId]);
@@ -175,19 +167,19 @@ class HandLevelController extends AbstractController
 
         $handLevel = $partie->getHandLevel();
         
-        // Vérifier que le type de main est valide
+        // Vérifier que le type de main demandé existe bien (highCard, pair, twoPair, etc.)
         $validHandTypes = array_keys($this->getHandsConfig());
         if (!in_array($handType, $validHandTypes)) {
             $this->addFlash('error', 'Type de main invalide.');
             return $this->redirectToRoute('hand_levels_index', ['partieId' => $partieId]);
         }
 
-        // Mettre à jour le niveau
+        // Mettre à jour le niveau (avec un minimum de 0, on ne peut pas avoir un niveau négatif !)
         $getter = 'get' . ucfirst($handType);
         $setter = 'set' . ucfirst($handType);
         
         $currentLevel = $handLevel->$getter();
-        $newLevel = max(0, $currentLevel + $amount); // Minimum 0
+        $newLevel = max(0, $currentLevel + $amount); // Ne descend jamais en dessous de 0
         
         $handLevel->$setter($newLevel);
         $em->flush();
@@ -198,9 +190,7 @@ class HandLevelController extends AbstractController
         return $this->redirectToRoute('hand_levels_index', ['partieId' => $partieId]);
     }
 
-    /**
-     * Réinitialiser tous les niveaux à 0
-     */
+    // Remettre toutes les mains au niveau 0 (quand on veut recommencer à zéro)
     #[Route('/reset', name: 'hand_levels_reset', methods: ['POST'])]
     public function reset(int $partieId, Request $request, EntityManagerInterface $em): Response
     {
@@ -210,7 +200,7 @@ class HandLevelController extends AbstractController
             throw $this->createNotFoundException('Partie non trouvée');
         }
 
-        // Vérifier le token CSRF
+        // Vérifier le token CSRF (sécurité contre les attaques)
         if (!$this->isCsrfTokenValid('hand_levels_reset', $request->request->get('_token'))) {
             $this->addFlash('error', 'Token CSRF invalide.');
             return $this->redirectToRoute('hand_levels_index', ['partieId' => $partieId]);
@@ -218,7 +208,7 @@ class HandLevelController extends AbstractController
 
         $handLevel = $partie->getHandLevel();
         
-        // Réinitialiser tous les niveaux à 0
+        // Passer toutes les mains à 0 (boucler sur toutes les mains et set(0))
         foreach (array_keys($this->getHandsConfig()) as $handType) {
             $setter = 'set' . ucfirst($handType);
             $handLevel->$setter(0);
@@ -231,9 +221,7 @@ class HandLevelController extends AbstractController
         return $this->redirectToRoute('hand_levels_index', ['partieId' => $partieId]);
     }
 
-    /**
-     * Améliorer toutes les mains de 1 niveau (effet Black Hole)
-     */
+    // Améliorer toutes les mains de +1 niveau d'un coup (comme l'effet du consommable Black Hole)
     #[Route('/upgrade-all', name: 'hand_levels_upgrade_all', methods: ['POST'])]
     public function upgradeAll(int $partieId, Request $request, EntityManagerInterface $em): Response
     {
@@ -243,7 +231,7 @@ class HandLevelController extends AbstractController
             throw $this->createNotFoundException('Partie non trouvée');
         }
 
-        // Vérifier le token CSRF
+        // Vérifier le token CSRF (sécurité contre les attaques)
         if (!$this->isCsrfTokenValid('hand_levels_upgrade_all', $request->request->get('_token'))) {
             $this->addFlash('error', 'Token CSRF invalide.');
             return $this->redirectToRoute('hand_levels_index', ['partieId' => $partieId]);
@@ -251,7 +239,7 @@ class HandLevelController extends AbstractController
 
         $handLevel = $partie->getHandLevel();
         
-        // Augmenter tous les niveaux de 1
+        // Ajouter 1 niveau à chaque main (l'effet Black Hole du jeu original)
         foreach (array_keys($this->getHandsConfig()) as $handType) {
             $getter = 'get' . ucfirst($handType);
             $setter = 'set' . ucfirst($handType);
@@ -260,7 +248,7 @@ class HandLevelController extends AbstractController
         
         $em->flush();
 
-        $this->addFlash('success', '🕳️ Toutes les mains ont été améliorées de 1 niveau (Black Hole) !');
+        $this->addFlash('success', 'Toutes les mains ont été améliorées de 1 niveau (Black Hole) !');
 
         return $this->redirectToRoute('hand_levels_index', ['partieId' => $partieId]);
     }

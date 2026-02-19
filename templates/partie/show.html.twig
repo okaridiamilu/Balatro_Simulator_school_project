@@ -1,3 +1,4 @@
+{# Page de détail d'une partie (affiche argent, cartes en main, défausses, slots de jokers, et la liste des jokers) #}
 {% extends "base.html.twig" %}
 
 {% block title %}{{ partie.identifiant }} - BALATRO SIMULATOR{% endblock %}
@@ -10,7 +11,32 @@
 </div>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h1 style="margin: 0;">{{ partie.identifiant }}</h1>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        {# Titre normal #}
+        <div id="nameDisplay" style="display: flex; align-items: center; gap: 10px;">
+            <h1 style="margin: 0;">{{ partie.identifiant }}</h1>
+            <button onclick="document.getElementById('nameDisplay').style.display='none'; document.getElementById('editNameForm').style.display='flex';" 
+                    style="background-color: #ffc107; color: #000; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.9em;">
+                ✏️ Modifier
+            </button>
+        </div>
+        
+        {# Formulaire de modification du nom (caché par défaut) #}
+        <form id="editNameForm" method="post" action="{{ path('partie_update_name', {'id': partie.id}) }}" 
+              style="display: none; align-items: center; gap: 10px;">
+            <input type="hidden" name="_token" value="{{ csrf_token('update_name_' ~ partie.id) }}">
+            <input type="text" name="identifiant" value="{{ partie.identifiant }}" 
+                   style="padding: 8px; border: 2px solid #007bff; border-radius: 5px; font-size: 1.2em;"
+                   maxlength="100" required>
+            <button type="submit" style="background-color: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                ✓ Valider
+            </button>
+            <button type="button" onclick="document.getElementById('editNameForm').style.display='none'; document.getElementById('nameDisplay').style.display='flex';" 
+                    style="background-color: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                ✗ Annuler
+            </button>
+        </form>
+    </div>
     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
         <a href="{{ path('partie_cartes_index', {'partieId': partie.id}) }}" 
            style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
@@ -34,6 +60,11 @@
 {# Messages flash #}
 {% for message in app.flashes('success') %}
     <div style="background-color: #28a745; color: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
+        {{ message }}
+    </div>
+{% endfor %}
+{% for message in app.flashes('error') %}
+    <div style="background-color: #dc3545; color: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
         {{ message }}
     </div>
 {% endfor %}

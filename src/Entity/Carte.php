@@ -12,6 +12,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+// Carte = une carte à jouer (avec son numéro, sa couleur, et ses modifications : status, seal, matter)
 #[ORM\Entity]
 #[ORM\Table(name: 'carte')]
 class Carte
@@ -44,9 +45,7 @@ class Carte
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $image = null;
 
-    /**
-     * @var Collection<int, Partie>
-     */
+    // Les parties qui utilisent cette carte (une même carte peut être dans plusieurs decks)
     #[ORM\ManyToMany(targetEntity: Partie::class, mappedBy: 'cartes')]
     private Collection $parties;
 

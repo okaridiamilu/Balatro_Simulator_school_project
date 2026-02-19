@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+// Formulaire pour ajouter une instance de joker dans une partie (sélectionner le joker, son état, sa position)
 class JokerInstanceType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

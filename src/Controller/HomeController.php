@@ -16,35 +16,38 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class HomeController extends AbstractController
 {
+    // Page "About" qui affiche le dictionnaire de tous les jokers (avec filtres par nom/rareté et tri)
     #[Route("/about", name:"about")]
     public function about(Request $request, EntityManagerInterface $em): Response
     {
-        // Récupérer TOUS les joker templates depuis la base de données
+        // Récupérer tous les joker templates qui existent
         $allJokers = $em->getRepository(JokerTemplate::class)->findAll();
         
-        // Créer le formulaire de filtre
+        // Créer le formulaire avec les filtres (nom, rareté, tri)
         $filterForm = $this->createForm(JokerFilterType::class);
         $filterForm->handleRequest($request);
         
-        // Filtrer les jokers selon les critères
+        // Appliquer les filtres sur la liste de jokers
         $filteredJokers = $this->filterJokers($allJokers, $filterForm->getData());
         
-        return $this->render("about.html.twig", [
+        return $this->render("dictionary/dictionary.html.twig", [
             'filterForm' => $filterForm->createView(),
             'jokers' => $filteredJokers,
             'totalJokers' => count($allJokers)
         ]);
     }
     
+    // Fonction qui filtre et trie les jokers selon les critères choisis
     private function filterJokers(array $jokers, ?array $filters): array
     {
+        // Si pas de filtres, on renvoie tout
         if (!$filters) {
             return $jokers;
         }
         
-        // Filtrage
+        // Filtrage (on ne garde que les jokers qui correspondent aux critères)
         $filtered = array_filter($jokers, function(JokerTemplate $joker) use ($filters) {
-            // Filtre par nom
+            // Filtre par nom (recherche simple dans le nom du joker)
             if (!empty($filters['nom'])) {
                 $searchTerm = strtolower($filters['nom']);
                 $jokerName = strtolower($joker->getNom());
@@ -53,8 +56,9 @@ class HomeController extends AbstractController
                 }
             }
             
-            // Filtre par rareté (comparer avec la valeur de l'ENUM)
+            // Filtre par rareté (commun, uncommun, rare, legendary)
             if (!empty($filters['rarete'])) {
+                // Comparer avec la valeur de l'ENUM (pas l'objet entier)
                 if ($joker->getRarete()->value !== $filters['rarete']) {
                     return false;
                 }
@@ -63,22 +67,24 @@ class HomeController extends AbstractController
             return true;
         });
         
-        // Tri
+        // Tri (ordre alphabétique ou rareté croissant/décroissant)
         if (!empty($filters['tri'])) {
-            $filtered = array_values($filtered); // Réindexer
+            $filtered = array_values($filtered); // Réindexer le tableau pour éviter les bugs de tri
             
             switch ($filters['tri']) {
                 case 'nom_asc':
-                    usort($filtered, fn($a, $b) => strcasecmp($a->getNom(), $b->getNom()));
+                    usort($filtered, fn($a, $b) => strcasecmp($a->getNom(), $b->getNom())); // A->Z
                     break;
                 case 'nom_desc':
-                    usort($filtered, fn($a, $b) => strcasecmp($b->getNom(), $a->getNom()));
+                    usort($filtered, fn($a, $b) => strcasecmp($b->getNom(), $a->getNom())); // Z->A
                     break;
                 case 'rarete_asc':
+                    // Ordre croissant : commun < uncommun < rare < legendary
                     $order = ['commun' => 1, 'uncommun' => 2, 'rare' => 3, 'legendary' => 4];
                     usort($filtered, fn($a, $b) => ($order[$a->getRarete()->value] ?? 0) <=> ($order[$b->getRarete()->value] ?? 0));
                     break;
                 case 'rarete_desc':
+                    // Ordre décroissant : legendary > rare > uncommun > commun
                     $order = ['legendary' => 1, 'rare' => 2, 'uncommun' => 3, 'commun' => 4];
                     usort($filtered, fn($a, $b) => ($order[$a->getRarete()->value] ?? 0) <=> ($order[$b->getRarete()->value] ?? 0));
                     break;
@@ -88,58 +94,36 @@ class HomeController extends AbstractController
         return $filtered;
     }
 
+    // Créer un nouveau joker template (route du TP, pas utilisée dans l'app finale)
     #[Route("/joker/new", name:"joker_new")]
     public function newJoker(Request $request, EntityManagerInterface $em): Response
     {
-        // 1. Instancier une nouvelle entité JokerTemplate
+        // Instancier une nouvelle entité JokerTemplate vide
         $jokerTemplate = new JokerTemplate();
         
-        // 2. Créer le formulaire à partir du Type
+        // Créer le formulaire à partir du Type
         $form = $this->createForm(JokerTemplateType::class, $jokerTemplate);
         
-        // 3. Écouter la requête
+        // Écouter la requête (si le formulaire a été soumis, les données sont injectées)
         $form->handleRequest($request);
         
-        // 4. Vérifier si le formulaire a été soumis ET valide
+        // Vérifier si le formulaire a été soumis ET est valide
         if ($form->isSubmitted() && $form->isValid()) {
-            // 5. Récupérer les données validées
+            // Récupérer le joker validé
             $validatedJoker = $form->getData();
             
-            // 6. Sauvegarder en base de données
+            // Sauvegarder en base
             $em->persist($validatedJoker);
             $em->flush();
             
-            // Message de succès
             $this->addFlash('success', 'Le joker template "' . $validatedJoker->getNom() . '" a été créé avec succès !');
             
-            // Rediriger vers la liste
             return $this->redirectToRoute('about');
         }
         
-        // Afficher le formulaire
         return $this->render('joker/new.html.twig', [
             'jokerForm' => $form->createView()
         ]);
-    }
-
-    #[Route("/hello/{name}", name:"hello")]
-    public function hello($name): Response
-    {
-        return $this->render("hello.html.twig", ["name"=>ucfirst($name)]);
-    }
-
-
-    #[Route("/random", name:"random")]
-    public function random(): Response
-    {
-        $quotes = [
-            "follow the white rabbit",
-            "may the force be with you",
-            "I'll be back",
-            "you shall not pass"
-        ];
-        $randomQuote = $quotes[random_int(0,sizeof($quotes)-1)];
-        return $this->render("random.html.twig", ["quote"=>$randomQuote, "allquotes"=>$quotes]);
     }
 }
 ?>

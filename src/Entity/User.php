@@ -9,6 +9,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
+// User = un utilisateur du site (avec son nom d'utilisateur et mot de passe hashé)
 #[ORM\Entity]
 #[ORM\Table(name: 'user')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -32,9 +33,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(message: "Le mot de passe est obligatoire")]
     private ?string $password = null;
 
-    /**
-     * @var Collection<int, Partie>
-     */
+    // Toutes les parties créées par cet utilisateur (un user peut avoir plusieurs parties)
     #[ORM\OneToMany(targetEntity: Partie::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $parties;
 

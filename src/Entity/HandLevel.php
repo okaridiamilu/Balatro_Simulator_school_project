@@ -5,6 +5,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+// HandLevel = les niveaux de toutes les mains de poker (pair, brelan, quinte, etc.) pour une partie
+// Chaque niveau augmente les chips et mult de la main correspondante
 #[ORM\Entity]
 #[ORM\Table(name: 'hand_level')]
 class HandLevel

@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+// Voucher = bonus spécial pour une partie (genre coupon ou avantage permanent)
 #[ORM\Entity]
 #[ORM\Table(name: 'voucher')]
 class Voucher

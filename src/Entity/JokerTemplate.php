@@ -9,10 +9,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * JokerTemplate représente la définition d'un joker dans le catalogue.
- * Il s'agit du "modèle" de joker, pas d'une instance spécifique dans une partie.
- */
+// JokerTemplate = le modèle/catalogue d'un joker (Vampire, Baron, etc.) avec ses caractéristiques de base
+// Pas une instance spécifique, juste la "recette" du joker
 #[ORM\Entity]
 #[ORM\Table(name: 'joker_template')]
 class JokerTemplate
@@ -49,25 +47,19 @@ class JokerTemplate
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
-    /**
-     * Code de l'effet (ex: "vampire", "baron", "constellation")
-     * Utilisé pour identifier quelle logique appliquer
-     */
+    // Code identifiant l'effet de ce joker (ex: "vampire", "baron", "constellation")
+    // Utilisé pour savoir quelle logique appliquer
     #[Assert\NotBlank(message: "Le code d'effet ne peut pas être vide")]
     #[Assert\Length(max: 50)]
     #[ORM\Column(length: 50, nullable: false)]
     private ?string $effetCode = null;
 
-    /**
-     * Configuration JSON pour l'activation de l'effet
-     * Exemple: {"poker_hand": "Full House", "card_count": 5}
-     */
+    // Configuration JSON pour quand l'effet se déclenche
+    // Exemple: {"poker_hand": "Full House", "card_count": 5}
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $conditionActivation = null;
 
-    /**
-     * Type de stack: chips, mult_flat, mult_multiplicateur, xmult
-     */
+    // Type de stack : chips, mult_flat (mult additif), mult_multiplicateur, xmult
     #[Assert\NotNull(message: "Le type de stack doit être défini")]
     #[ORM\Column(type: 'string', enumType: TypeStack::class)]
     private ?TypeStack $typeStack = null;

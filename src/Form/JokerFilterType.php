@@ -9,15 +9,13 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * Formulaire de filtre pour les JokerTemplate
- * Note: Le champ "etat" a été retiré car il appartient désormais à JokerInstance
- */
+// Formulaire de filtre pour la page About (rechercher par nom, filtrer par rareté, trier)
+// Note : le champ "etat" a été retiré car il appartient désormais à JokerInstance, pas JokerTemplate
 class JokerFilterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        // Construire les choix de rareté à partir de l'ENUM
+        // Construire les choix de rareté depuis l'ENUM (commun, uncommun, rare, legendary)
         $raretes = ['Toutes' => ''];
         foreach (RareteJoker::cases() as $rarete) {
             $raretes[ucfirst($rarete->value)] = $rarete->value;
@@ -56,7 +54,7 @@ class JokerFilterType extends AbstractType
     {
         $resolver->setDefaults([
             'method' => 'GET',
-            'csrf_protection' => false, // Pas nécessaire pour un filtre en GET
+            'csrf_protection' => false, // Pas nécessaire pour un simple filtre en GET (pas de données sensibles)
         ]);
     }
 }

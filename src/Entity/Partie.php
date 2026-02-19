@@ -7,10 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * Partie représente une session de jeu (anciennement Session)
- * Renommée pour correspondre au plan d'architecture
- */
+// Partie = une session de jeu complète (avec son deck, ses jokers, son argent, etc.)
 #[ORM\Entity]
 #[ORM\Table(name: 'partie')]
 class Partie
@@ -47,40 +44,33 @@ class Partie
     #[ORM\Column(type: 'boolean')]
     private bool $observatoireActif = false;
 
-    // Relation ManyToOne vers User
+    // L'utilisateur qui possède cette partie (chaque partie appartient à quelqu'un)
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'parties')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: "L'utilisateur est obligatoire")]
     private ?User $user = null;
 
-    // Relation OneToOne vers HandLevel
+    // Les niveaux de toutes les mains (pair, brelan, quinte, etc.) pour cette partie
     #[ORM\OneToOne(targetEntity: HandLevel::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?HandLevel $handLevel = null;
 
-    // Relation OneToOne vers Voucher
+    // Le voucher actif pour cette partie (bonus spécial, optionnel)
     #[ORM\OneToOne(targetEntity: Voucher::class)]
     #[ORM\JoinColumn(nullable: true)]
     private ?Voucher $voucher = null;
 
-    /**
-     * @var Collection<int, Carte>
-     */
+    // Le deck de cartes de cette partie (52 cartes de base + celles ajoutées)
     #[ORM\ManyToMany(targetEntity: Carte::class, inversedBy: 'parties')]
     #[ORM\JoinTable(name: 'partie_carte')]
     private Collection $cartes;
 
-    /**
-     * @var Collection<int, JokerInstance>
-     * CHANGEMENT: Utilise maintenant JokerInstance au lieu de Joker
-     */
+    // Les instances de jokers de cette partie (chaque joker a son propre état et compteur)
     #[ORM\OneToMany(targetEntity: JokerInstance::class, mappedBy: 'partie', cascade: ['persist', 'remove'])]
     #[ORM\OrderBy(['ordre' => 'ASC'])]
     private Collection $jokers;
 
-    /**
-     * @var Collection<int, Consommable>
-     */
+    // Les consommables de cette partie (tarots, planètes, spectres)
     #[ORM\ManyToMany(targetEntity: Consommable::class, inversedBy: 'parties')]
     #[ORM\JoinTable(name: 'partie_consommable')]
     private Collection $consommables;

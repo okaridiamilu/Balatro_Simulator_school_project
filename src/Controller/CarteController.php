@@ -18,9 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/partie/{partieId}/cartes')]
 class CarteController extends AbstractController
 {
-    /**
-     * Afficher les cartes d'une partie
-     */
+    //Afficher les cartes d'une partie d'un joueur
     #[Route('/', name: 'partie_cartes_index')]
     public function index(int $partieId, EntityManagerInterface $em): Response
     {
@@ -31,14 +29,12 @@ class CarteController extends AbstractController
             return $this->redirectToRoute('partie_index');
         }
         
-        return $this->render('carte/index.html.twig', [
+        return $this->render('carte/deck.html.twig', [
             'partie' => $partie,
         ]);
     }
 
-    /**
-     * Ajouter une carte au deck de la partie
-     */
+    //Fonction pour ajouter une carte au deck de la partie
     #[Route('/add', name: 'partie_cartes_add', methods: ['POST'])]
     public function add(int $partieId, Request $request, EntityManagerInterface $em): Response
     {
@@ -49,13 +45,13 @@ class CarteController extends AbstractController
             return $this->redirectToRoute('partie_index');
         }
 
-        // Vérifier le token CSRF
+        // Vérifier le token CSRF (cross-site request forgery) (en gros c'est pour éviter que des attaques externes puissent faire des requêtes à notre place) (je le dis ici je ne le répèterais pas à chaque fois mais c'est important de le faire pour toutes les actions qui modifient des données)
         if (!$this->isCsrfTokenValid('carte_add', $request->request->get('_token'))) {
             $this->addFlash('error', 'Token CSRF invalide.');
             return $this->redirectToRoute('partie_cartes_index', ['partieId' => $partieId]);
         }
 
-        // Créer la carte
+        // Créer la carte (on récupère les datas du formulaire d'ajout de carte)
         $carte = new Carte();
         $carte->setNumber(CarteNumber::from($request->request->get('number')));
         $carte->setColor(CarteColor::from($request->request->get('color')));
@@ -72,9 +68,7 @@ class CarteController extends AbstractController
         return $this->redirectToRoute('partie_cartes_index', ['partieId' => $partieId]);
     }
 
-    /**
-     * Retirer une carte du deck
-     */
+    //Retirer une carte du deck
     #[Route('/{carteId}/remove', name: 'partie_cartes_remove', methods: ['POST'])]
     public function remove(int $partieId, int $carteId, EntityManagerInterface $em): Response
     {
@@ -117,7 +111,7 @@ class CarteController extends AbstractController
         $numbers = CarteNumber::cases();
         $colors = CarteColor::cases();
         $count = 0;
-
+        //Une belle petite boucle imbriquée pour créer toutes les cartes du deck standard
         foreach ($numbers as $number) {
             foreach ($colors as $color) {
                 $carte = new Carte();
@@ -171,9 +165,7 @@ class CarteController extends AbstractController
         return $this->redirectToRoute('partie_cartes_index', ['partieId' => $partieId]);
     }
 
-    /**
-     * Actions groupées sur plusieurs cartes
-     */
+    //Fonction pour modifier plusieurs cartes en même temps (quand on sélectionne plusieurs cartes dans l'interface)
     #[Route('/bulk-action', name: 'partie_cartes_bulk_action', methods: ['POST'])]
     public function bulkAction(int $partieId, Request $request, EntityManagerInterface $em): Response
     {
@@ -184,12 +176,12 @@ class CarteController extends AbstractController
             return $this->redirectToRoute('partie_index');
         }
 
-        // Vérifier le token CSRF
         if (!$this->isCsrfTokenValid('bulk_action', $request->request->get('_token'))) {
             $this->addFlash('error', 'Token CSRF invalide.');
             return $this->redirectToRoute('partie_cartes_index', ['partieId' => $partieId]);
         }
 
+        // Récupérer les IDs des cartes sélectionnées et l'action à effectuer
         $carteIds = $request->request->all('carte_ids');
         $action = $request->request->get('action');
 
@@ -201,6 +193,7 @@ class CarteController extends AbstractController
         $cartes = $em->getRepository(Carte::class)->findBy(['id' => $carteIds]);
         $count = count($cartes);
 
+        // Selon l'action demandée, on fait l'opération sur toutes les cartes sélectionnées
         switch ($action) {
             case 'delete':
                 foreach ($cartes as $carte) {
@@ -234,6 +227,7 @@ class CarteController extends AbstractController
                 break;
 
             case 'reset_to_base':
+                // Remettre toutes les cartes à leur état initial (sans édition, sceau, ni amélioration)
                 foreach ($cartes as $carte) {
                     $carte->setStatus(CarteStatus::BASE);
                     $carte->setSeal(CarteStatusSeal::BASE);
@@ -249,6 +243,7 @@ class CarteController extends AbstractController
                     return $this->redirectToRoute('partie_cartes_index', ['partieId' => $partieId]);
                 }
                 
+                // Pour chaque carte sélectionnée, on en crée X copies identiques
                 $totalCreated = 0;
                 foreach ($cartes as $carte) {
                     for ($i = 0; $i < $duplicateCount; $i++) {

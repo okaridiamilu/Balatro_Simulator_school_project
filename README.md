@@ -3,6 +3,68 @@ README de mon projet de Symfony  🐬 🌈 ✨
 Bonjour, voici mon projet de Symfony. (ne fais pas attention au nom du dossier, ceci n'est pas la correction du TP2, je vous rassure.)
 Mon projet consistait à faire un simulateur Balatro, une sorte de "what if" qui vous permet de reconstituer des situations précises pour les calculer. Une certaine quantité d'argent, de jokers, de cartes, consommables...
 
+## 📦 Installation
+
+### Prérequis
+- PHP 8.1 ou supérieur
+- Composer
+- MySQL/MariaDB
+- Symfony CLI (optionnel mais recommandé)
+
+### Étapes d'installation
+
+1. **Cloner le projet**
+```bash
+git clone https://github.com/okaridiamilu/Balatro_Simulator_school_project.git
+cd TP2-correction
+```
+
+2. **Installer les dépendances**
+```bash
+composer install
+```
+
+3. **Configurer la base de données**
+Créer un fichier `.env.local` (si inexistant) et configurer votre connexion MySQL :
+```env
+DATABASE_URL="mysql://votre_user:votre_password@127.0.0.1:3306/balatro_db?serverVersion=8.0"
+```
+
+4. **Créer la base de données**
+```bash
+php bin/console doctrine:database:create
+```
+
+5. **Exécuter les migrations**
+```bash
+php bin/console doctrine:migrations:migrate
+```
+
+6. **Importer les jokers templates (IMPORTANT)**
+Les jokers templates sont essentiels pour le fonctionnement du dictionnaire et pour ajouter des jokers aux parties.
+```bash
+mysql -u votre_user -p balatro_db < joker_templates.sql
+```
+Ou si vous utilisez un client MySQL graphique (phpMyAdmin, MySQL Workbench), importez simplement le fichier `joker_templates.sql`.
+
+7. **Lancer le serveur**
+```bash
+symfony serve
+# OU
+php -S localhost:8000 -t public
+```
+
+8. **Accéder à l'application**
+Ouvrez votre navigateur à l'adresse : `http://localhost:8000`
+
+### Première utilisation
+- Créez un compte utilisateur via la page d'inscription
+- Connectez-vous
+- Créez votre première partie !
+- Explorez le dictionnaire des jokers pour voir tous les jokers disponibles
+
+---
+
 Comment ça marche?
     Il suffit de se faire un compte. En vous connectant vous serez directement emmené à la page "Mes parties". Vous pourrez donc créer votre propre partie de toute pièce OU en importer une sous format JSON (ou la faire vous-même en format JSON à la main, mais à ce niveau-là à quoi ça sert de faire une interface graphique?)
 
